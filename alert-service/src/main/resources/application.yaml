@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: alert-service
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5435/gridwatch
+    username: gridwatch
+    password: gridwatch-local
+
+server:
+  port: 8081
+
