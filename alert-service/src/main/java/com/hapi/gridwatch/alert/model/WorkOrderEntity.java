@@ -1,6 +1,6 @@
 package com.hapi.gridwatch.alert.model;
 
-import com.hapi.gridwatch.alert.enums.WorkOrderStatus;
+import com.hapi.gridwatch.alert.enums.WorkOrderStatusOption;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -22,8 +22,8 @@ public class WorkOrderEntity {
     private String reason;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="work_order_status", nullable = false)
-    private WorkOrderStatus workOrderStatus;
+    @Column(name = "work_order_status", nullable = false)
+    private WorkOrderStatusOption workOrderStatus;
 
     @CreationTimestamp
     @Column(nullable = false)
@@ -33,6 +33,18 @@ public class WorkOrderEntity {
     private Instant updatedAt;
 
     public WorkOrderEntity() {
+    }
+
+    public WorkOrderEntity(String substationId, String reason, WorkOrderStatusOption workOrderStatus) {
+        this.substationId = substationId;
+        this.reason = reason;
+        this.workOrderStatus = workOrderStatus;
+    }
+
+    public WorkOrderEntity(ReadingEntity readingEntity, WorkOrderStatusOption workOrderStatus, String reason) {
+        this.substationId = readingEntity.getSubstationId();
+        this.workOrderStatus = workOrderStatus;
+        this.reason = reason;
     }
 
     public Long getId() {
@@ -70,10 +82,10 @@ public class WorkOrderEntity {
         this.reason = reason;
     }
 
-    public WorkOrderStatus getWorkOrderStatus() {
+    public WorkOrderStatusOption getWorkOrderStatus() {
         return workOrderStatus;
     }
-    public void setWorkOrderStatus(WorkOrderStatus workOrderStatus) {
+    public void setWorkOrderStatus(WorkOrderStatusOption workOrderStatus) {
         this.workOrderStatus = workOrderStatus;
     }
 }

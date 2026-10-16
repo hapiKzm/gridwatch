@@ -1,6 +1,6 @@
 package com.hapi.gridwatch.alert.enums;
 
-public enum WorkOrderStatus {
+public enum WorkOrderStatusOption {
     OPEN,
     CLOSED,
 }

@@ -1,6 +1,7 @@
 package com.hapi.gridwatch.alert.model;
 
-import com.hapi.gridwatch.alert.enums.SensorType;
+import com.hapi.gridwatch.alert.dto.ReadingDto;
+import com.hapi.gridwatch.alert.enums.SensorTypeOption;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -20,7 +21,7 @@ public class ReadingEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name="sensor_type", nullable = false)
-    private SensorType sensorType;
+    private SensorTypeOption sensorType;
 
     @Column(nullable = false)
     private Double value;
@@ -33,13 +34,18 @@ public class ReadingEntity {
     private Instant createdAt;
 
     @UpdateTimestamp
-
     private Instant updatedAt;
-
 
     public ReadingEntity() {
     }
 
+    public ReadingEntity( UUID id, String substationId, SensorTypeOption sensorType, Double value, Instant measuredAt) {
+        this.id = id;
+        this.substationId = substationId;
+        this.sensorType = sensorType;
+        this.value = value;
+        this.measuredAt = measuredAt;
+    }
 
     public UUID getId() {
         return id;
@@ -69,10 +75,10 @@ public class ReadingEntity {
         this.substationId = substationId;
     }
 
-    public SensorType getSensorType() {
+    public SensorTypeOption getSensorType() {
         return sensorType;
     }
-    public void setSensorType(SensorType sensorType) {
+    public void setSensorType(SensorTypeOption sensorType) {
         this.sensorType = sensorType;
     }
 
@@ -89,4 +95,5 @@ public class ReadingEntity {
     public void setMeasuredAt(Instant measuredAt) {
         this.measuredAt = measuredAt;
     }
+
 }
