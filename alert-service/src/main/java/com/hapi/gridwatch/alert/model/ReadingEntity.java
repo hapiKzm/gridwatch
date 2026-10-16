@@ -1,6 +1,5 @@
 package com.hapi.gridwatch.alert.model;
 
-import com.hapi.gridwatch.alert.dto.ReadingDto;
 import com.hapi.gridwatch.alert.enums.SensorTypeOption;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;

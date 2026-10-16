@@ -1,7 +1,5 @@
 package com.hapi.gridwatch.alert.enums;
 
-import jakarta.validation.constraints.NotNull;
-
 public enum SensorTypeOption {
     TEMPERATURE("TEMPERATURE", 90),
     LOAD("LOAD", 100);
@@ -11,5 +9,12 @@ public enum SensorTypeOption {
     SensorTypeOption(String name, int limit) {
         this.name = name;
         this.limit = limit;
+    }
+
+    public static SensorTypeOption findByName( String s) {
+        for (SensorTypeOption t : SensorTypeOption.values())
+            if (t.name.equals(s)) return t;
+
+        return null;
     }
 }

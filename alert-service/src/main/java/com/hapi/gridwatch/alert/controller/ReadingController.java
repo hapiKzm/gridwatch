@@ -1,7 +1,7 @@
 package com.hapi.gridwatch.alert.controller;
 
 
-import com.hapi.gridwatch.alert.dto.ReadingDto;
+import com.hapi.gridwatch.alert.dto.ReadingRestRequest;
 import com.hapi.gridwatch.alert.dto.WorkOrderDto;
 import com.hapi.gridwatch.alert.service.ReadingService;
 import jakarta.validation.Valid;
@@ -22,16 +22,16 @@ public class ReadingController {
     }
 
     @PostMapping(path = "reading/internal")
-    public ResponseEntity<Object> readingController(@Valid @RequestBody ReadingDto readingDto) {
+    public ResponseEntity<Object> readingController(@Valid @RequestBody ReadingRestRequest readingRestRequest) {
         try {
-            readingService.saveReading(readingDto);
+            readingService.saveReading(readingRestRequest);
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body(e.getMessage());
         }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(readingDto);
+                .body(readingRestRequest);
     }
 
     @GetMapping(path = "work-orders")

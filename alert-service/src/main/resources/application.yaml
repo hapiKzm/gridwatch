@@ -9,6 +9,10 @@ spring:
     url: jdbc:postgresql://localhost:5435/gridwatch
     username: gridwatch
     password: gridwatch-local
+  security:
+    user:
+      name: gridwatch
+      password: gridwatch-local-api
 
 server:
   port: 8081

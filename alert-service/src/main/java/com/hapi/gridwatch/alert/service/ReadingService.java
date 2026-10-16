@@ -1,6 +1,6 @@
 package com.hapi.gridwatch.alert.service;
 
-import com.hapi.gridwatch.alert.dto.ReadingDto;
+import com.hapi.gridwatch.alert.dto.ReadingRestRequest;
 import com.hapi.gridwatch.alert.dto.WorkOrderDto;
 import com.hapi.gridwatch.alert.enums.SensorTypeOption;
 import com.hapi.gridwatch.alert.enums.WorkOrderStatusOption;
@@ -29,20 +29,25 @@ public class ReadingService {
 
 
     @Transactional( isolation = Isolation.DEFAULT)
-    public void saveReading(ReadingDto readingDto) throws Exception {
-        if (readingDto.id() != null && readingRepository.existsById(readingDto.id())) return;
+    public void saveReading(ReadingRestRequest readingRestRequest) throws Exception {
+        if (readingRestRequest.id() != null && readingRepository.existsById(readingRestRequest.id())) return;
+
+        SensorTypeOption sensorTypeOption =
+                SensorTypeOption.findByName(readingRestRequest.sensorType());
+
+        if (sensorTypeOption == null) throw new Exception("SensorType not found");
 
         ReadingEntity readingEntity = new ReadingEntity(
-                readingDto.id(),
-                readingDto.substationId(),
-                readingDto.sensorType(),
-                readingDto.value(),
-                readingDto.measuredAt()
+                readingRestRequest.id(),
+                readingRestRequest.substationId(),
+                SensorTypeOption.findByName(readingRestRequest.sensorType()),
+                readingRestRequest.value(),
+                readingRestRequest.measuredAt()
         );
 
         readingRepository.save(readingEntity);
 
-        if (readingDto.value() > readingDto.sensorType().limit)
+        if (readingRestRequest.value() > sensorTypeOption.limit)
             saveWorkOrder(readingEntity);
 
     }
@@ -53,7 +58,7 @@ public class ReadingService {
                         readingEntity,
                         WorkOrderStatusOption.OPEN,
                         readingEntity.getSensorType().name + " " +
-                                readingEntity.getValue() + " " +
+                                readingEntity.getValue() + " above limit " +
                                 readingEntity.getSensorType().limit
                 )
         );
