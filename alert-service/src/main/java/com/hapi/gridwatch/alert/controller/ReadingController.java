@@ -1,6 +1,7 @@
 package com.hapi.gridwatch.alert.controller;
 
 
+import com.hapi.gridwatch.alert.exception.UnknownSensorTypeException;
 import com.hapi.gridwatch.alert.dto.ReadingRestRequest;
 import com.hapi.gridwatch.alert.dto.WorkOrderDto;
 import com.hapi.gridwatch.alert.service.ReadingService;
@@ -25,7 +26,7 @@ public class ReadingController {
     public ResponseEntity<Object> readingController(@Valid @RequestBody ReadingRestRequest readingRestRequest) {
         try {
             readingService.saveReading(readingRestRequest);
-        } catch (Exception e) {
+        } catch (UnknownSensorTypeException e) {
             return ResponseEntity.badRequest()
                     .body(e.getMessage());
         }

@@ -1,5 +1,6 @@
 package com.hapi.gridwatch.alert.service;
 
+import com.hapi.gridwatch.alert.exception.UnknownSensorTypeException;
 import com.hapi.gridwatch.alert.dto.ReadingRestRequest;
 import com.hapi.gridwatch.alert.dto.WorkOrderDto;
 import com.hapi.gridwatch.alert.enums.SensorTypeOption;
@@ -29,13 +30,14 @@ public class ReadingService {
 
 
     @Transactional( isolation = Isolation.DEFAULT)
-    public void saveReading(ReadingRestRequest readingRestRequest) throws Exception {
+    public void saveReading(ReadingRestRequest readingRestRequest){
         if (readingRestRequest.id() != null && readingRepository.existsById(readingRestRequest.id())) return;
 
         SensorTypeOption sensorTypeOption =
                 SensorTypeOption.findByName(readingRestRequest.sensorType());
 
-        if (sensorTypeOption == null) throw new Exception("SensorType not found");
+        if (sensorTypeOption == null)
+            throw new UnknownSensorTypeException("SensorType not found");
 
         ReadingEntity readingEntity = new ReadingEntity(
                 readingRestRequest.id(),

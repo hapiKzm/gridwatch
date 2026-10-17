@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record ReadingRestRequest(
-    @NotBlank
+    @NotNull
     UUID id,
     @NotBlank
     String substationId,
