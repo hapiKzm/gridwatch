@@ -18,7 +18,6 @@ spring:
         enable.idempotence: true # no duplicates from producer retries (default in new clients)
     properties:
       spring.json.add.type.headers: false
-      enable.idempotence: true
       max.block.ms: 5000           # don't hang 60 s when Kafka is down
       request.timeout.ms: 3000
       delivery.timeout.ms: 5000    # must be >= request.timeout.ms + linger.ms

@@ -1,7 +1,7 @@
 package com.hapi.gridwatch.ingest.controller;
 
 
-import com.hapi.gridwatch.ingest.Exception.KafkaUnavailableException;
+import com.hapi.gridwatch.ingest.exception.KafkaUnavailableException;
 import com.hapi.gridwatch.ingest.dto.UserReadingRequest;
 import com.hapi.gridwatch.ingest.service.ReadingService;
 import jakarta.validation.Valid;

@@ -1,12 +1,8 @@
 package com.hapi.gridwatch.alert.controller;
 
 
-import com.hapi.gridwatch.alert.exception.UnknownSensorTypeException;
-import com.hapi.gridwatch.alert.dto.ReadingRestRequest;
 import com.hapi.gridwatch.alert.dto.WorkOrderDto;
 import com.hapi.gridwatch.alert.service.ReadingService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

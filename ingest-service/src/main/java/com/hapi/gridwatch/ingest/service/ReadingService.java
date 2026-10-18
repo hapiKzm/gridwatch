@@ -1,6 +1,6 @@
 package com.hapi.gridwatch.ingest.service;
 
-import com.hapi.gridwatch.ingest.Exception.KafkaUnavailableException;
+import com.hapi.gridwatch.ingest.exception.KafkaUnavailableException;
 import com.hapi.gridwatch.ingest.dto.UserReadingRequest;
 import com.hapi.gridwatch.ingest.enums.SensorTypeOption;
 import com.hapi.gridwatch.ingest.rest.ReadingRestRequest;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
