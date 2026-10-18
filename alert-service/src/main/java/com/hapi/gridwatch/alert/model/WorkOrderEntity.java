@@ -35,12 +35,6 @@ public class WorkOrderEntity {
     public WorkOrderEntity() {
     }
 
-    public WorkOrderEntity(String substationId, String reason, WorkOrderStatusOption workOrderStatus) {
-        this.substationId = substationId;
-        this.reason = reason;
-        this.workOrderStatus = workOrderStatus;
-    }
-
     public WorkOrderEntity(ReadingEntity readingEntity, WorkOrderStatusOption workOrderStatus, String reason) {
         this.substationId = readingEntity.getSubstationId();
         this.workOrderStatus = workOrderStatus;

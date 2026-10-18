@@ -12,7 +12,7 @@ import java.util.List;
 @RequestMapping
 public class ReadingController {
 
-    private ReadingService readingService;
+    private final ReadingService readingService;
 
     public ReadingController(ReadingService readingService) {
         this.readingService = readingService;

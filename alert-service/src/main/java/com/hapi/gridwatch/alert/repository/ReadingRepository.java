@@ -9,5 +9,4 @@ import java.util.UUID;
 
 @Repository
 public interface ReadingRepository extends JpaRepository<ReadingEntity, UUID> {
-    ReadingEntity findFirstById(UUID id);
 }

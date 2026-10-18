@@ -8,7 +8,7 @@ import java.time.Instant;
 public record UserReadingRequest(
         @NotBlank
         String substationId,
-        @NotNull
+        @NotBlank
         String sensorType,
         @NotNull
         Double value,

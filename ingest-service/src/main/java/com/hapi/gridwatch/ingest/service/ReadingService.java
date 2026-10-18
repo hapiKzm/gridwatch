@@ -3,6 +3,7 @@ package com.hapi.gridwatch.ingest.service;
 import com.hapi.gridwatch.ingest.exception.KafkaUnavailableException;
 import com.hapi.gridwatch.ingest.dto.UserReadingRequest;
 import com.hapi.gridwatch.ingest.enums.SensorTypeOption;
+import com.hapi.gridwatch.ingest.exception.InvalidReadingException;
 import com.hapi.gridwatch.ingest.rest.ReadingRestRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +35,8 @@ public class ReadingService {
 
         try {
             SensorTypeOption.valueOf(in.sensorType());
-        }catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unknown sensor type: " + in.sensorType());
+        }catch (IllegalArgumentException  e) {
+            throw new InvalidReadingException("Unknown sensor type: " + in.sensorType());
         }
 
         ReadingRestRequest out = new ReadingRestRequest(

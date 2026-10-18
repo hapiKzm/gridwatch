@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class Topics {
 
     @Bean
-    public NewTopic readingDLT(@Value("${kafka-topic.reading-dlt}") String topic){
+    public NewTopic readingDLTTopic(@Value("${kafka-topic.reading-dlt}") String topic){
         return new NewTopic(topic, 3, (short) 1);
     };
 }

@@ -44,5 +44,6 @@ logging:
     name: logs/alert-service.log
 
 kafka-topic:
+  reading: 'gridwatch.readings'
   reading-dlt: 'gridwatch.readings-dlt'
 

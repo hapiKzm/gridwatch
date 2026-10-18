@@ -1,6 +1,6 @@
 package com.hapi.gridwatch.alert.service;
 
-import com.hapi.gridwatch.alert.exception.UnknownSensorTypeException;
+import com.hapi.gridwatch.alert.exception.InvalidReadingException;
 import com.hapi.gridwatch.alert.dto.ReadingRestRequest;
 import com.hapi.gridwatch.alert.dto.WorkOrderDto;
 import com.hapi.gridwatch.alert.enums.SensorTypeOption;
@@ -10,8 +10,8 @@ import com.hapi.gridwatch.alert.model.WorkOrderEntity;
 import com.hapi.gridwatch.alert.repository.ReadingRepository;
 import com.hapi.gridwatch.alert.repository.WorkOrderRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,29 +20,36 @@ import java.util.stream.Collectors;
 public class ReadingService {
 
     private final ReadingRepository readingRepository;
-    private final WorkOrderRepository wordOrderRepository;
+    private final WorkOrderRepository workOrderRepository;
 
-    public ReadingService(ReadingRepository readingRepository, WorkOrderRepository wordOrderRepository) {
+    public ReadingService(ReadingRepository readingRepository, WorkOrderRepository workOrderRepository) {
         this.readingRepository = readingRepository;
-        this.wordOrderRepository = wordOrderRepository;
+        this.workOrderRepository = workOrderRepository;
     }
 
 
 
-    @Transactional( isolation = Isolation.DEFAULT)
-    public void saveReading(ReadingRestRequest readingRestRequest){
+    @Transactional
+    public void saveReadingRequest(ReadingRestRequest readingRestRequest){
+        validateReading(readingRestRequest);
         if (readingRestRequest.id() != null && readingRepository.existsById(readingRestRequest.id())) return;
 
-        SensorTypeOption sensorTypeOption =
-                SensorTypeOption.findByName(readingRestRequest.sensorType());
+        saveReading(readingRestRequest);
 
-        if (sensorTypeOption == null)
-            throw new UnknownSensorTypeException("SensorType not found");
+    }
 
+    private void saveReading(ReadingRestRequest readingRestRequest) {
+        SensorTypeOption sensorTypeOption = null;
+        try {
+            sensorTypeOption =
+                    SensorTypeOption.valueOf(readingRestRequest.sensorType());
+        }catch (IllegalArgumentException  e) {
+            throw new InvalidReadingException("Unknown sensor type: " + readingRestRequest.sensorType());
+        }
         ReadingEntity readingEntity = new ReadingEntity(
                 readingRestRequest.id(),
                 readingRestRequest.substationId(),
-                SensorTypeOption.findByName(readingRestRequest.sensorType()),
+                sensorTypeOption,
                 readingRestRequest.value(),
                 readingRestRequest.measuredAt()
         );
@@ -51,15 +58,21 @@ public class ReadingService {
 
         if (readingRestRequest.value() > sensorTypeOption.limit)
             saveWorkOrder(readingEntity);
+    }
 
+    private void validateReading(ReadingRestRequest readingRestRequest) {
+        if (readingRestRequest.value() == null) throw new InvalidReadingException("value is null") ;
+        if (!StringUtils.hasText(readingRestRequest.sensorType())) throw new InvalidReadingException("sensor type is null") ;
+        if (!StringUtils.hasText(readingRestRequest.substationId())) throw new InvalidReadingException("substationId is null") ;
+        if (readingRestRequest.measuredAt() == null) throw new InvalidReadingException("measuredAt is null") ;
     }
 
     private void saveWorkOrder(ReadingEntity readingEntity) {
-        wordOrderRepository.save(
+        workOrderRepository.save(
                 new WorkOrderEntity(
                         readingEntity,
                         WorkOrderStatusOption.OPEN,
-                        readingEntity.getSensorType().name + " " +
+                        readingEntity.getSensorType() + " " +
                                 readingEntity.getValue() + " above limit " +
                                 readingEntity.getSensorType().limit
                 )
@@ -67,7 +80,7 @@ public class ReadingService {
     }
 
     public List<WorkOrderDto> getAllWorkOrder() {
-        return wordOrderRepository.findAll()
+        return workOrderRepository.findAll()
                 .stream()
                 .map( m -> new WorkOrderDto(
                         m.getId(),

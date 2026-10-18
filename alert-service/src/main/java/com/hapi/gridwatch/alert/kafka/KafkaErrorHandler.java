@@ -1,6 +1,6 @@
 package com.hapi.gridwatch.alert.kafka;
 
-import com.hapi.gridwatch.alert.exception.UnknownSensorTypeException;
+import com.hapi.gridwatch.alert.exception.InvalidReadingException;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.Serializer;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +21,6 @@ import java.util.Map;
 @Configuration
 public class KafkaErrorHandler {
 
-
     @Bean
     KafkaTemplate<Object, Object> dltTemplate(ProducerFactory<Object, Object> producerFactory) {
         Map<Class<?>, Serializer<?>> delegates = new LinkedHashMap<>();
@@ -37,7 +36,7 @@ public class KafkaErrorHandler {
     DefaultErrorHandler errorHandler(KafkaTemplate<Object, Object> template) {
         var recover = new DeadLetterPublishingRecoverer(template);
         var errorHandler = new DefaultErrorHandler(recover, new FixedBackOff(1000L, 3)); // 3 retries, 1 s apart
-        errorHandler.addNotRetryableExceptions(UnknownSensorTypeException.class);
+        errorHandler.addNotRetryableExceptions(InvalidReadingException.class);
         return errorHandler;
     }
 }

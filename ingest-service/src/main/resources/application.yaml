@@ -25,3 +25,4 @@ spring:
 kafka-topic:
   reading: 'gridwatch.readings'
 
+
