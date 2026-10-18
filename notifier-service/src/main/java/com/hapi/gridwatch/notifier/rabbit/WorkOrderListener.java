@@ -2,7 +2,7 @@ package com.hapi.gridwatch.notifier.rabbit;
 
 
 import com.hapi.gridwatch.notifier.dto.WorkOrderCreatedEvent;
-import com.hapi.gridwatch.notifier.mail.EmailService;
+import com.hapi.gridwatch.notifier.service.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
@@ -15,16 +15,16 @@ public class WorkOrderListener {
 
     private final static Logger logger = LoggerFactory.getLogger(WorkOrderListener.class);
 
-    private final EmailService emailService;
+    private final NotificationService notificationService;
 
-    public WorkOrderListener(EmailService  emailService) {
-        this.emailService = emailService;
+    public WorkOrderListener(NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 
     @RabbitListener(queues = "${rabbit.queue}")
     public void receiveWorkOrderCreatedEvent(WorkOrderCreatedEvent workOrderCreatedEvent){
         validateWorkOrderCreatedEvent(workOrderCreatedEvent);
-        emailService.sendWorkOrderCreated(workOrderCreatedEvent);
+        notificationService.notifyOnce(workOrderCreatedEvent);
     }
 
     private void validateWorkOrderCreatedEvent(WorkOrderCreatedEvent workOrderCreatedEvent){
