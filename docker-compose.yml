@@ -39,27 +39,6 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
-  alert:
-    build: ./alert-service
-    ports:
-      - "8081:8081"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gridwatch
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-    depends_on:
-      db:
-       condition: service_healthy
-      kafka:
-       condition: service_healthy
-  ingest:
-    build: ./ingest-service
-    ports:
-      - "8082:8082"
-    environment:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-    depends_on:
-      kafka:
-       condition: service_healthy
   rabbitmq:
     image: rabbitmq:4-management-alpine
     ports:
@@ -80,6 +59,49 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+
+
+  alert:
+    build: ./alert-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gridwatch
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    depends_on:
+      db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+  ingest:
+    build: ./ingest-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  notifier:
+    build: ./notifier-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/notifier
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_MAIL_HOST: mailpit
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+
 volumes:
   postgres-data:
   kafka:
