@@ -30,7 +30,7 @@ flowchart LR
 - `@KafkaListener` on `gridwatch.readings`, group `alert.gridwatch`, calls the existing `ReadingService` (duplicate check, limit rule, work order).
 - `ErrorHandlingDeserializer` + JSON deserializer with a fixed target type and no type headers.
 - Offsets are committed by Spring after the listener succeeds.
-- **Error handling:** `DefaultErrorHandler` with `FixedBackOff(1000 ms, 3 retries)`; `UnknownSensorTypeException` is not retried. Failed messages go to `gridwatch.readings-dlt` with headers describing the error.
+- **Error handling:** `DefaultErrorHandler` with `FixedBackOff(1000 ms, 3 retries)`; `InvalidReadingException` is not retried. Failed messages go to `gridwatch.readings-dlt` with headers describing the error.
 - DLT producer uses `DelegatingByTypeSerializer`: raw bytes for messages that couldn't be deserialized, JSON for objects that failed in processing.
 
 ### Event contract
@@ -62,7 +62,7 @@ Topic `gridwatch.readings`, key = `substationId`:
 | Reading via ingest | In the topic with the right key and partition, consumed (lag 0), saved, work order above the limit |
 | **Resilience:** alert-service stopped, 3 readings sent | ingest still answered `202`; lag rose to 3; after starting alert-service all 3 were processed and lag returned to 0 |
 | Broken message (`hello`) produced by hand | Moved to the DLT with `DeserializationException` headers, not retried forever |
-| Unknown sensor type produced by hand | Moved to the DLT immediately with `UnknownSensorTypeException` |
+| Unknown sensor type produced by hand | Moved to the DLT immediately with `InvalidReadingException` |
 | Good reading behind a bad one | Processed once the bad one reached the DLT |
 | Unknown sensor type via ingest | `400` before publishing |
 | **Full stack in Docker:** alert container stopped, 2 readings sent | Both `202`; saved about 30 s after `docker compose start alert`, lag 0 |
