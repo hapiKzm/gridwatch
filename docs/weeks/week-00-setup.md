@@ -61,12 +61,21 @@ gridwatch/
 
 ## Running locally
 
+**Everything in Docker (default):**
+
 ```bash
-docker compose up -d          # PostgreSQL (5435) and Kafka (9092)
+docker compose up -d --build  # db, kafka, alert, ingest
+docker compose ps             # db and kafka (healthy), services Up
+```
+
+**Services from IntelliJ (while developing):**
+
+```bash
+docker compose up -d db kafka # only PostgreSQL (5435) and Kafka (9092)
 docker compose ps             # wait until both are (healthy)
 ```
 
-Then start `AlertServiceApplication` and `IngestServiceApplication` from IntelliJ (in that order). **Always start Docker first**: services create their topics, tables and consumer groups at startup.
+Then start `AlertServiceApplication` and `IngestServiceApplication` from IntelliJ (in that order). Stop the `alert` and `ingest` containers first, they use the same ports. **Always start Docker first**: services create their topics, tables and consumer groups at startup.
 
 | Component | Address |
 |---|---|

@@ -65,6 +65,7 @@ Topic `gridwatch.readings`, key = `substationId`:
 | Unknown sensor type produced by hand | Moved to the DLT immediately with `UnknownSensorTypeException` |
 | Good reading behind a bad one | Processed once the bad one reached the DLT |
 | Unknown sensor type via ingest | `400` before publishing |
+| **Full stack in Docker:** alert container stopped, 2 readings sent | Both `202`; saved about 30 s after `docker compose start alert`, lag 0 |
 
 How to check each step: see [kafka-cheatsheet.md](../kafka-cheatsheet.md).
 
@@ -92,7 +93,15 @@ How to check each step: see [kafka-cheatsheet.md](../kafka-cheatsheet.md).
 | DLT empty, partition blocked | DLT publish failed (serializer configured twice) → record never recovered | One configuration source for the serializer |
 | DLT had 1 partition | Auto-created before the `NewTopic` bean | Delete it and let the bean create it |
 
-## Remaining for this week
+## Running everything in Docker
 
-- Dockerfiles for both services and the full stack in Docker Compose (`depends_on: condition: service_healthy`, environment overrides such as `kafka:29092` and `db:5432`).
+- Multi-stage `Dockerfile` per service (JDK 21 build stage, JRE 21 run stage, ~120-150 MB images) and a `.dockerignore`.
+- `alert` and `ingest` added to `docker-compose.yml` with `build:`, ports, environment overrides (`db:5432`, `kafka:29092`) and `depends_on: condition: service_healthy`.
+- One command starts the whole system: `docker compose up -d --build`. Details: [kafka-in-docker.md](../kafka-in-docker.md).
 - alert-service's old `POST /reading/internal` was removed: Kafka is the only way readings enter alert-service.
+
+| Problem | Cause | Fix |
+|---|---|---|
+| `bind: ... 8082 ... only one usage` | Same services still running in IntelliJ | Stop them; never run a service in both places |
+| Typo `--form=build` | — | `--from=build` |
+| `-db:` under `depends_on` | List syntax mixed into a map | `db:` with `condition:` below |

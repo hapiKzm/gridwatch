@@ -64,10 +64,10 @@ All services expose `GET /actuator/health` (no login) and metrics for Prometheus
 
 ## Run it
 
-Requirements: Java 21 and Docker.
+Requirements: Docker. (Java 21 only to run the services from an IDE.)
 
 ```bash
-docker compose up --build
+docker compose up -d --build
 ```
 
 Send a reading (credentials are set in the service configuration):
@@ -105,6 +105,9 @@ Details and alternatives: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 ## Documentation
 
 - [Architecture (C4)](docs/ARCHITECTURE.md)
+- [Docker basics](docs/docker-basics.md)
+- [Kafka basics](docs/kafka-basics.md)
+- [Kafka and the services in Docker](docs/kafka-in-docker.md)
 - [Kafka cheat sheet](docs/kafka-cheatsheet.md)
 - [Week 0: setup and project structure](docs/weeks/week-00-setup.md)
 - [Week 1: REST services](docs/weeks/week-01-rest-services.md)
