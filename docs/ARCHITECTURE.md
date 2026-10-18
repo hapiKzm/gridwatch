@@ -44,8 +44,10 @@ flowchart LR
         kafka[["<b>Kafka</b> (KRaft)<br/>topic gridwatch.readings<br/>key = substationId"]]
         alert["<b>alert-service</b><br/>Spring Boot<br/>dedupe, limit rule, work orders"]
         db[("<b>PostgreSQL</b><br/>readings, work_orders")]
-        rabbit[["<b>RabbitMQ</b><br/>queue notifications<br/>+ dead-letter queue"]]
-        notifier["<b>notifier-service</b><br/>Spring Boot<br/>notifies technicians"]
+        rabbit[["<b>RabbitMQ</b><br/>exchange gridwatch.work-orders<br/>queue notifier.work-orders + DLQ"]]
+        notifier["<b>notifier-service</b><br/>Spring Boot<br/>emails technicians once"]
+        db2[("<b>PostgreSQL</b><br/>database notifier")]
+        mail["<b>SMTP</b><br/>Mailpit locally"]
         prom["<b>Prometheus</b>"]
         grafana["<b>Grafana</b>"]
     end
@@ -56,8 +58,10 @@ flowchart LR
     ingest -->|"publish reading (JSON)"| kafka
     kafka -->|"consume (group alert-service)"| alert
     alert -->|"JPA"| db
-    alert -->|"publish notify task"| rabbit
-    rabbit --> notifier
+    alert -->|"work-order.created (after commit)"| rabbit
+    rabbit -->|"binding work-order.*"| notifier
+    notifier -->|"sent_notification"| db2
+    notifier -->|"email"| mail
     alert -.->|"circuit breaker"| ai
     prom -.->|"scrape /actuator/prometheus"| ingest
     prom -.-> alert
@@ -72,7 +76,8 @@ flowchart LR
 | alert-service | Java 21, Spring Boot 4, JPA | Skips duplicates, stores readings, applies limits, creates work orders, requests notifications |
 | PostgreSQL | PostgreSQL | Readings and work orders, owned by alert-service only; schema managed with Flyway |
 | RabbitMQ | RabbitMQ | Notification tasks that must be done once, with retries and a dead-letter queue |
-| notifier-service | Java 21, Spring Boot 4 | Delivers notifications to technicians |
+| notifier-service | Java 21, Spring Boot 4, JPA, Mail | Emails the technician team once per work order; retries, dead-letter queue; own database `notifier` |
+| Mailpit | SMTP test server | Catches emails locally (inbox on port 8025) |
 | Prometheus, Grafana | Monitoring | Metrics collection and dashboards |
 | AI model API | External | Drafts a technician note, called through a circuit breaker |
 
@@ -120,10 +125,15 @@ flowchart TB
 ```mermaid
 flowchart TB
     subgraph notifier["notifier-service"]
-        q["Notification listener<br/><i>RabbitMQ consumer, retries,<br/>dead-letter queue</i>"]
-        send["Sender<br/><i>delivers to the technician team</i>"]
+        q["WorkOrderListener<br/><i>RabbitMQ consumer, validates</i>"]
+        svc["NotificationService<br/><i>@Transactional: skip if id exists,<br/>save id, send</i>"]
+        repo["SentNotificationRepository"]
+        send["EmailService<br/><i>JavaMailSender</i>"]
     end
-    q --> send
+    q --> svc
+    svc --> repo
+    svc --> send
+    q -.->|"invalid / failed 3x"| dlq[["notifier.work-orders.dlq"]]
 ```
 
 ---
@@ -239,6 +249,9 @@ flowchart LR
 | Message key = substationId | Readings of one substation stay in order; different substations in parallel | No key: no ordering guarantee |
 | UUID per reading, created by ingest | Duplicate detection in alert-service (Kafka delivers at least once) | Database-generated id: only known after saving |
 | RabbitMQ for notifications | One-time tasks with per-message retries and a dead-letter queue | Kafka: possible, but a queue fits tasks better |
+| Publish after commit (`@TransactionalEventListener`) | No notification for a rolled-back work order | Publish inside the transaction; transactional outbox |
+| Notify once: `sent_notification` keyed by work order id, save + send in one transaction | One email despite at-least-once delivery; failed email is retried | Send first (duplicates) or save first (lost emails) |
+| Limited retries, no retry for invalid data, DLQ | Temporary failures recover, bad data is parked at once | Default requeue: endless loop |
 | Circuit breaker around the AI call | A slow or failing AI service must not stop work orders | Direct call: one outage blocks the flow |
 | `Instant` / `timestamptz` | Correct across time zones and daylight saving | `LocalDateTime`: ambiguous |
 | Enum stored as text, limit in the enum | Safe when values are added; one place to change limits | Ordinal storage, lookup table |

@@ -28,9 +28,9 @@ flowchart LR
     ingest -->|"event: reading"| kafka[["Kafka<br/>gridwatch.readings"]]
     kafka --> alert["alert-service"]
     alert --> db[("PostgreSQL")]
-    alert -->|"task: notify"| rabbit[["RabbitMQ<br/>notifications"]]
+    alert -->|"work-order.created"| rabbit[["RabbitMQ<br/>gridwatch.work-orders"]]
     rabbit --> notifier["notifier-service"]
-    notifier --> tech["Technicians"]
+    notifier -->|"email"| tech["Technicians"]
     alert -.->|"technician note"| ai["AI model API"]
     prom["Prometheus"] -.->|"scrapes metrics"| ingest & alert & notifier
     grafana["Grafana"] -.-> prom
@@ -58,7 +58,7 @@ The full C4 model (context, containers, components, code), the reading flow and 
 |---|---|---|
 | ingest-service | Public entry point: validate readings, assign a UUID, publish to Kafka | `POST /api/readings` → `202 Accepted` with the reading id |
 | alert-service | Consume readings, skip duplicates, store, apply limits, create work orders | Kafka consumer, `GET /work-orders` |
-| notifier-service | Deliver technician notifications with retries and a dead-letter queue | RabbitMQ consumer |
+| notifier-service | Email the technician team once per work order, with retries and a dead-letter queue | RabbitMQ consumer, SMTP |
 
 All services expose `GET /actuator/health` (no login) and metrics for Prometheus. Other endpoints use HTTP Basic authentication.
 
@@ -69,6 +69,15 @@ Requirements: Docker. (Java 21 only to run the services from an IDE.)
 ```bash
 docker compose up -d --build
 ```
+
+| What | Where |
+|---|---|
+| Send readings | http://localhost:8082/api/readings |
+| Work orders | http://localhost:8081/work-orders |
+| RabbitMQ dashboard | http://localhost:15672 |
+| Test email inbox (Mailpit) | http://localhost:8025 |
+
+The `notifier` database is created once: `docker compose exec db psql -U gridwatch -d gridwatch -c "create database notifier;"`
 
 Send a reading (credentials are set in the service configuration):
 
@@ -97,6 +106,7 @@ gridwatch/
 - **Message key = substation id**: readings of one substation stay in order.
 - **UUID per reading, created at ingest**: alert-service detects duplicates (Kafka delivers at least once).
 - **RabbitMQ for notifications**: one-time tasks with per-message retries and a dead-letter queue.
+- **Publish after commit, notify once**: alert sends only committed work orders; notifier records each work order id so a redelivered message sends no second email.
 - **`Instant` with `timestamp with time zone`**: no daylight-saving or time-zone bugs.
 - **Each service owns its data**: no shared database.
 
@@ -115,3 +125,4 @@ Details and alternatives: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 - [Week 0: setup and project structure](docs/weeks/week-00-setup.md)
 - [Week 1: REST services](docs/weeks/week-01-rest-services.md)
 - [Week 2: Kafka](docs/weeks/week-02-kafka.md)
+- [Week 3: RabbitMQ and notifier-service](docs/weeks/week-03-rabbitmq.md)

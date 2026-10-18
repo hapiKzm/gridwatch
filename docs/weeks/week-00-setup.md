@@ -40,8 +40,16 @@ gridwatch/
 │       ├── model/             JPA entities
 │       ├── repository/        Spring Data repositories
 │       └── service/           duplicate check, limit rule, work orders
+├── notifier-service/          Spring Boot, port 8083
+│   └── src/main/java/com/hapi/gridwatch/notifier/
+│       ├── dto/               event record
+│       ├── mail/              email sending
+│       ├── model/             sent_notification entity
+│       ├── rabbit/            queue, binding, DLQ, retry rule, listener
+│       ├── repository/        Spring Data repository
+│       └── service/           send once per work order
 ├── docs/                      architecture, cheat sheets, weekly notes
-├── docker-compose.yml         PostgreSQL + Kafka
+├── docker-compose.yml         PostgreSQL, Kafka, RabbitMQ, Mailpit, all services
 └── README.md
 ```
 
@@ -51,7 +59,7 @@ gridwatch/
 gridwatch/
 ├── ingest-service/
 ├── alert-service/
-├── notifier-service/          RabbitMQ consumer, technician notifications
+├── notifier-service/
 ├── monitoring/                Prometheus and Grafana configuration
 ├── helm/                      Kubernetes deployment
 ├── .github/workflows/         CI: build, test, Docker images
@@ -64,26 +72,29 @@ gridwatch/
 **Everything in Docker (default):**
 
 ```bash
-docker compose up -d --build  # db, kafka, alert, ingest
+docker compose up -d --build  # db, kafka, rabbitmq, mailpit, alert, ingest, notifier
 docker compose ps             # db and kafka (healthy), services Up
 ```
 
 **Services from IntelliJ (while developing):**
 
 ```bash
-docker compose up -d db kafka # only PostgreSQL (5435) and Kafka (9092)
-docker compose ps             # wait until both are (healthy)
+docker compose up -d db kafka rabbitmq mailpit # only the infrastructure
+docker compose ps             # wait until all are (healthy)
 ```
 
-Then start `AlertServiceApplication` and `IngestServiceApplication` from IntelliJ (in that order). Stop the `alert` and `ingest` containers first, they use the same ports. **Always start Docker first**: services create their topics, tables and consumer groups at startup.
+Then start `AlertServiceApplication`, `IngestServiceApplication` and `NotifierServiceApplication` from IntelliJ. Stop the `alert`, `ingest` and `notifier` containers first, they use the same ports. **Always start Docker first**: services create their topics, tables and consumer groups at startup.
 
 | Component | Address |
 |---|---|
 | ingest-service | http://localhost:8082 |
 | alert-service | http://localhost:8081 |
-| PostgreSQL | localhost:5435, database `gridwatch` |
+| notifier-service | port 8083 (no public API) |
+| RabbitMQ | localhost:5672 (inside Docker: rabbitmq:5672), dashboard http://localhost:15672 |
+| Mailpit | SMTP localhost:1025 (inside Docker: mailpit:1025), inbox http://localhost:8025 |
+| PostgreSQL | localhost:5435, databases `gridwatch` (alert) and `notifier` |
 | Kafka | localhost:9092 (inside Docker: kafka:29092) |
-| Health checks | `/actuator/health` on both services, no login |
+| Health checks | `/actuator/health` on every service, no login |
 
 Credentials for local development are in each service's `application.yaml`. They are local-only values and will move to environment variables before the repository goes public.
 
