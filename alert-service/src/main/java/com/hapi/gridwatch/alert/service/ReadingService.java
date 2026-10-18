@@ -1,5 +1,6 @@
 package com.hapi.gridwatch.alert.service;
 
+import com.hapi.gridwatch.alert.dto.WorkOrderCreatedEvent;
 import com.hapi.gridwatch.alert.exception.InvalidReadingException;
 import com.hapi.gridwatch.alert.dto.ReadingRestRequest;
 import com.hapi.gridwatch.alert.dto.WorkOrderDto;
@@ -9,6 +10,7 @@ import com.hapi.gridwatch.alert.model.ReadingEntity;
 import com.hapi.gridwatch.alert.model.WorkOrderEntity;
 import com.hapi.gridwatch.alert.repository.ReadingRepository;
 import com.hapi.gridwatch.alert.repository.WorkOrderRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -21,10 +23,12 @@ public class ReadingService {
 
     private final ReadingRepository readingRepository;
     private final WorkOrderRepository workOrderRepository;
+    private final ApplicationEventPublisher workOrderPublisher;
 
-    public ReadingService(ReadingRepository readingRepository, WorkOrderRepository workOrderRepository) {
+    public ReadingService(ReadingRepository readingRepository, WorkOrderRepository workOrderRepository, ApplicationEventPublisher workOrderPublisher) {
         this.readingRepository = readingRepository;
         this.workOrderRepository = workOrderRepository;
+        this.workOrderPublisher = workOrderPublisher;
     }
 
 
@@ -68,13 +72,23 @@ public class ReadingService {
     }
 
     private void saveWorkOrder(ReadingEntity readingEntity) {
-        workOrderRepository.save(
+        WorkOrderEntity workOrder = workOrderRepository.save(
                 new WorkOrderEntity(
                         readingEntity,
                         WorkOrderStatusOption.OPEN,
                         readingEntity.getSensorType() + " " +
                                 readingEntity.getValue() + " above limit " +
                                 readingEntity.getSensorType().limit
+                )
+        );
+
+        // send to rabbitmq
+        workOrderPublisher.publishEvent(
+                new WorkOrderCreatedEvent(
+                        workOrder.getId(),
+                        workOrder.getSubstationId(),
+                        workOrder.getReason(),
+                        workOrder.getCreatedAt()
                 )
         );
     }

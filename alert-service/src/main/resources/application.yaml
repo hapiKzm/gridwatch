@@ -5,7 +5,7 @@ spring:
   application:
     name: alert-service
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
   datasource:
@@ -38,6 +38,15 @@ spring:
         max.block.ms: 5000
         request.timeout.ms: 3000
         delivery.timeout.ms: 5000    # must be >= request.timeout.ms + linger.ms
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: gridwatch
+    password: gridwatch-local
+    publisher-confirm-type: correlated # broker confirms each message
+    publisher-returns: true # tell me if no queue matched
+    template:
+      mandatory: true
 
 logging:
   file:
@@ -47,3 +56,6 @@ kafka-topic:
   reading: 'gridwatch.readings'
   reading-dlt: 'gridwatch.readings-dlt'
 
+rabbit:
+  exchange: 'gridwatch.work-orders'
+  routing-key: 'work-order.created'
