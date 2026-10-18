@@ -59,7 +59,7 @@ In code: `send(...).get(5, SECONDS)` → `202` only after Kafka confirmed, other
 | `spring.json.use.type.headers` | `false` | Ignore any `__TypeId__` header from the producer |
 | producer settings | as above | Needed to publish to the DLT |
 
-In code: `DefaultErrorHandler` + `DeadLetterPublishingRecoverer`, `FixedBackOff(1000, 3)`, `InvalidReadingException` not retried, DLT template with `DelegatingByTypeSerializer` (`byte[]` → bytes, objects → JSON). DLT has the same 3 partitions as the source topic.
+In code: `DefaultErrorHandler` + `DeadLetterPublishingRecoverer`, `FixedBackOff(1000, 3)`, `AmqpRejectAndDontRequeueException` not retried, DLT template with `DelegatingByTypeSerializer` (`byte[]` → bytes, objects → JSON). DLT has the same 3 partitions as the source topic.
 
 ## Wiring it up: code per part
 

@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfig {
 
     @Bean
-    public TopicExchange workingOrder(@Value("${rabbit.exchange}") String WORKING_ORDER_EXCHANGE){
-        return new TopicExchange(WORKING_ORDER_EXCHANGE);
+    public TopicExchange workingOrderExchange(@Value("${rabbit.exchange}") String workOrderExchange){
+        return new TopicExchange(workOrderExchange);
     }
 
     @Bean

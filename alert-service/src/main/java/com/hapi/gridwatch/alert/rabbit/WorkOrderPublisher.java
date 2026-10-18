@@ -30,6 +30,5 @@ public class WorkOrderPublisher {
     public void workOrderCreated(WorkOrderCreatedEvent event) {
         rabbit.convertAndSend(exchange, routingKey, event);
         log.info("Published work order {} to RabbitMQ", event.workOrderId());
-
     }
 }

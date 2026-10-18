@@ -1,0 +1,33 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: notifier-service
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: gridwatch
+    password: gridwatch-local
+    listener:
+      simple:
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1s
+          multiplier: 2
+  mail:
+    host: localhost
+    port: 1025
+
+rabbit:
+  exchange: gridwatch.work-orders
+  queue: notifier.work-orders
+  binding-key: work-order.*
+  dlq: notifier.work-orders.dlq
+
+
+notifier:
+  from: gridwatch@local.test
+  to: technicians@local.test
