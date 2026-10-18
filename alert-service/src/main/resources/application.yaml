@@ -27,5 +27,22 @@ spring:
           spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
           spring.json.value.default.type: com.hapi.gridwatch.alert.dto.ReadingRestRequest
           spring.json.trusted.packages: com.hapi.gridwatch.alert.dto
-          spring.json.add.type.headers: false
+          spring.json.use.type.headers: false
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+      acks: all
+      properties:
+        spring.json.add.type.headers: false
+        enable.idempotence: true
+        max.block.ms: 5000
+        request.timeout.ms: 3000
+        delivery.timeout.ms: 5000    # must be >= request.timeout.ms + linger.ms
+
+logging:
+  file:
+    name: logs/alert-service.log
+
+kafka-topic:
+  reading-dlt: 'gridwatch.readings-dlt'
 
