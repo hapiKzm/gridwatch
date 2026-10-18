@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -32,8 +33,11 @@ public class ReadingService {
     public UUID publish(UserReadingRequest in) {
         UUID id = UUID.randomUUID();
 
-        if (SensorTypeOption.findByName(in.sensorType()) == null)
+        try {
+            SensorTypeOption.valueOf(in.sensorType());
+        }catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Unknown sensor type: " + in.sensorType());
+        }
 
         ReadingRestRequest out = new ReadingRestRequest(
                 id,

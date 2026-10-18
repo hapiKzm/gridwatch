@@ -22,19 +22,6 @@ public class ReadingController {
         this.readingService = readingService;
     }
 
-    @PostMapping(path = "reading/internal")
-    public ResponseEntity<Object> readingController(@Valid @RequestBody ReadingRestRequest readingRestRequest) {
-        try {
-            readingService.saveReading(readingRestRequest);
-        } catch (UnknownSensorTypeException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
-        }
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(readingRestRequest);
-    }
-
     @GetMapping(path = "work-orders")
     public ResponseEntity<List<WorkOrderDto>> workOrderList() {
         return ResponseEntity.ok(readingService.getAllWorkOrder());
