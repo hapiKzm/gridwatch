@@ -1,6 +1,6 @@
 # RabbitMQ basics
 
-Plain-words introduction to RabbitMQ as used in GridWatch. Compare with [kafka-basics.md](kafka-basics.md).
+Plain-words introduction to RabbitMQ as used in GridWatch. Compare with [kafka-basics.md](kafka-basics.md). Settings, code and commands: [rabbitmq-cheatsheet.md](rabbitmq-cheatsheet.md).
 
 ## The problem it solves
 
