@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfig {
 
     @Bean
-    public TopicExchange workingOrderExchange(@Value("${rabbit.exchange}") String workOrderExchange){
+    public TopicExchange workOrderExchange(@Value("${rabbit.exchange}") String workOrderExchange){
         return new TopicExchange(workOrderExchange);
     }
 
