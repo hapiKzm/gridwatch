@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1060" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#b91c1c"/></marker>
+  </defs>
+  <style>
+    .t{font-size:30px;font-weight:700;fill:#111}
+    .h{font-size:22px;font-weight:700;fill:#111}
+    .s{font-size:17px;fill:#333}
+    .l{font-size:17px;fill:#111;font-weight:600}
+    .ln{stroke:#333;stroke-width:2.5;fill:none;marker-end:url(#a)}
+    .er{stroke:#b91c1c;stroke-width:2.5;fill:none;stroke-dasharray:8 6;marker-end:url(#r)}
+  </style>
+  <rect width="900" height="1060" fill="#fff"/>
+  <text x="450" y="50" text-anchor="middle" class="t">Kafka: ingest → alert</text>
+
+  <rect x="250" y="85" width="400" height="100" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="450" y="120" text-anchor="middle" class="h">ingest-service = PRODUCER</text>
+  <text x="450" y="148" text-anchor="middle" class="s">kafkaTemplate.send(topic, substationId, reading)</text>
+  <text x="450" y="172" text-anchor="middle" class="s">waits for Kafka OK → 202, Kafka down → 503</text>
+
+  <line x1="450" y1="185" x2="450" y2="245" class="ln"/>
+  <text x="470" y="210" class="l">message = key + value</text>
+  <text x="470" y="232" class="s">key "DEV-01", value {"id":…,"value":95.0,…}</text>
+
+  <rect x="80" y="245" width="740" height="260" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="450" y="280" text-anchor="middle" class="h">TOPIC gridwatch.readings</text>
+  <text x="450" y="305" text-anchor="middle" class="s">same key → same partition → kept in order</text>
+  <rect x="110" y="325" width="680" height="45" rx="6" fill="#fff" stroke="#d97706"/>
+  <text x="130" y="354" class="l">partition 0</text><text x="300" y="354" class="s">[0] [1] [2] [3] …   offset = position in the line</text>
+  <rect x="110" y="380" width="680" height="45" rx="6" fill="#fff" stroke="#d97706"/>
+  <text x="130" y="409" class="l">partition 1</text><text x="300" y="409" class="s">[0] [1] [2] …</text>
+  <rect x="110" y="435" width="680" height="45" rx="6" fill="#fff" stroke="#d97706"/>
+  <text x="130" y="464" class="l">partition 2</text><text x="300" y="464" class="s">[0] [1] …   messages stay after reading (replay)</text>
+
+  <line x1="450" y1="505" x2="450" y2="565" class="ln"/>
+  <text x="470" y="530" class="l">poll, then commit offset</text>
+  <text x="470" y="552" class="s">"I have read up to here"</text>
+
+  <rect x="200" y="565" width="500" height="110" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="450" y="600" text-anchor="middle" class="h">alert-service = CONSUMER</text>
+  <text x="450" y="627" text-anchor="middle" class="s">@KafkaListener, group alert.gridwatch</text>
+  <text x="450" y="652" text-anchor="middle" class="s">UUID seen? skip · save reading · above limit → work order</text>
+
+  <line x1="450" y1="675" x2="450" y2="735" class="ln"/>
+  <text x="470" y="710" class="l">success</text>
+  <rect x="300" y="735" width="300" height="60" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="450" y="772" text-anchor="middle" class="h">PostgreSQL gridwatch</text>
+
+  <path d="M700 620 L800 620 L800 860" class="er"/>
+  <text x="560" y="830" class="l" fill="#b91c1c">error: retry 3x, 1 s apart</text>
+  <text x="560" y="852" class="s">invalid data: no retry</text>
+  <rect x="580" y="860" width="300" height="70" rx="10" fill="#fee2e2" stroke="#b91c1c" stroke-width="2"/>
+  <text x="730" y="892" text-anchor="middle" class="h">DEAD-LETTER TOPIC</text>
+  <text x="730" y="916" text-anchor="middle" class="s">gridwatch.readings-dlt</text>
+
+  <text x="40" y="980" class="l">Group = a team of consumers. Each partition goes to one member; a new group reads everything again.</text>
+  <text x="40" y="1010" class="l">At-least-once: a message can come twice → skip duplicate UUIDs.</text>
+  <text x="40" y="1040" class="s">Serializer: JacksonJsonSerializer (producer) · ErrorHandlingDeserializer + JacksonJsonDeserializer (consumer)</text>
+</svg>

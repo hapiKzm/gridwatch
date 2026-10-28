@@ -36,6 +36,8 @@ GridWatch uses a **topic** exchange, so later events (`work-order.closed`) or ot
 
 ## How a message flows
 
+![RabbitMQ flow](images/03-rabbitmq.svg)
+
 1. alert-service saves a work order and publishes `{"workOrderId":42,...}` to exchange `gridwatch.work-orders` with key `work-order.created`.
 2. The exchange checks its bindings and puts a copy in `notifier.work-orders`.
 3. notifier-service takes it, sends the email, and acks. The message is deleted.

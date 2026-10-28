@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1000" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker>
+  </defs>
+  <style>
+    .t{font-size:30px;font-weight:700;fill:#111}
+    .h{font-size:22px;font-weight:700;fill:#111}
+    .s{font-size:17px;fill:#333}
+    .l{font-size:17px;fill:#111;font-weight:600}
+    .ln{stroke:#333;stroke-width:2.5;fill:none;marker-end:url(#a)}
+  </style>
+  <rect width="900" height="1000" fill="#fff"/>
+  <text x="450" y="50" text-anchor="middle" class="t">GridWatch: how the parts talk</text>
+
+  <rect x="300" y="85" width="300" height="70" rx="10" fill="#eee" stroke="#666" stroke-width="2"/>
+  <text x="450" y="118" text-anchor="middle" class="h">Postman / sensor</text>
+  <text x="450" y="142" text-anchor="middle" class="s">HTTP POST /api/readings</text>
+
+  <line x1="450" y1="155" x2="450" y2="200" class="ln"/>
+
+  <rect x="300" y="200" width="300" height="80" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="450" y="235" text-anchor="middle" class="h">ingest-service :8082</text>
+  <text x="450" y="262" text-anchor="middle" class="s">validates, answers 202 / 400 / 503</text>
+
+  <line x1="450" y1="280" x2="450" y2="330" class="ln"/>
+  <text x="470" y="312" class="l">Kafka producer: reading (JSON), key = substationId</text>
+
+  <rect x="250" y="330" width="400" height="80" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="450" y="365" text-anchor="middle" class="h">Kafka</text>
+  <text x="450" y="392" text-anchor="middle" class="s">topic gridwatch.readings (3 partitions)</text>
+
+  <line x1="450" y1="410" x2="450" y2="460" class="ln"/>
+  <text x="470" y="442" class="l">Kafka consumer, group alert.gridwatch</text>
+
+  <rect x="300" y="460" width="300" height="80" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="450" y="495" text-anchor="middle" class="h">alert-service :8081</text>
+  <text x="450" y="522" text-anchor="middle" class="s">value above limit → work order</text>
+
+  <line x1="300" y1="500" x2="160" y2="500" class="ln"/>
+  <rect x="20" y="455" width="140" height="90" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="90" y="490" text-anchor="middle" class="h">PostgreSQL</text>
+  <text x="90" y="515" text-anchor="middle" class="s">db gridwatch</text>
+  <text x="90" y="535" text-anchor="middle" class="s">JDBC / JPA</text>
+
+  <line x1="450" y1="540" x2="450" y2="600" class="ln"/>
+  <text x="470" y="570" class="l">after commit: AMQP publish</text>
+  <text x="470" y="592" class="s">routing key work-order.created</text>
+
+  <rect x="250" y="600" width="400" height="80" rx="10" fill="#fce7f3" stroke="#db2777" stroke-width="2"/>
+  <text x="450" y="635" text-anchor="middle" class="h">RabbitMQ</text>
+  <text x="450" y="662" text-anchor="middle" class="s">exchange gridwatch.work-orders → queue</text>
+
+  <line x1="450" y1="680" x2="450" y2="730" class="ln"/>
+  <text x="470" y="712" class="l">@RabbitListener on notifier.work-orders</text>
+
+  <rect x="300" y="730" width="300" height="80" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="450" y="765" text-anchor="middle" class="h">notifier-service :8083</text>
+  <text x="450" y="792" text-anchor="middle" class="s">email once per work order</text>
+
+  <line x1="300" y1="770" x2="160" y2="770" class="ln"/>
+  <rect x="20" y="725" width="140" height="90" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="90" y="760" text-anchor="middle" class="h">PostgreSQL</text>
+  <text x="90" y="785" text-anchor="middle" class="s">db notifier</text>
+  <text x="90" y="805" text-anchor="middle" class="s">sent_notification</text>
+
+  <line x1="450" y1="810" x2="450" y2="860" class="ln"/>
+  <text x="470" y="842" class="l">SMTP (port 1025)</text>
+
+  <rect x="300" y="860" width="300" height="70" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+  <text x="450" y="893" text-anchor="middle" class="h">Mailpit</text>
+  <text x="450" y="917" text-anchor="middle" class="s">inbox localhost:8025</text>
+
+  <text x="450" y="975" text-anchor="middle" class="s">Blue = our services · Yellow/pink = message brokers · Green = databases. Everything runs in Docker Compose.</text>
+</svg>

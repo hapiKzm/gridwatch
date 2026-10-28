@@ -2,6 +2,17 @@
 
 How a reading travels from the REST call to a technician's email, what each piece does, and how it runs in Docker. Background: [kafka-basics.md](kafka-basics.md), [rabbitmq-basics.md](rabbitmq-basics.md), [docker-basics.md](docker-basics.md).
 
+## Pictures
+
+| Part | Image |
+|---|---|
+| Whole system | [01-overview.svg](images/01-overview.svg) |
+| Kafka: ingest → alert | [02-kafka.svg](images/02-kafka.svg) |
+| RabbitMQ: alert → notifier → email | [03-rabbitmq.svg](images/03-rabbitmq.svg) |
+| Docker: containers and addresses | [04-docker.svg](images/04-docker.svg) |
+
+![GridWatch overview](images/01-overview.svg)
+
 ## Overview
 
 ```mermaid

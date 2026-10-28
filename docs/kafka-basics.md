@@ -28,6 +28,8 @@ Think of it as a post office that keeps a copy of every letter, in order, for da
 
 ## How an event flows in GridWatch
 
+![Kafka flow](images/02-kafka.svg)
+
 1. Postman sends a reading to ingest-service.
 2. ingest-service checks it, gives it a UUID and sends it to topic `gridwatch.readings` with key `DEV-01`.
 3. Kafka picks the partition from the key, appends the event at the next offset and confirms. ingest answers `202`.

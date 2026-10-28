@@ -98,4 +98,6 @@ Remaining gap, accepted: if the app crashes after the email is sent but before t
 
 `feat: publish work order created events to rabbitmq` → `feat: add notifier-service with rabbitmq and email` → `feat: send only one notification per work order` → `docs: add messaging flow diagrams and rabbitmq cheat sheet` → `feat: run notifier, rabbitmq and mailpit in docker compose`
 
+![RabbitMQ flow](../images/03-rabbitmq.svg)
+
 More: [messaging-flow.md](../messaging-flow.md), [rabbitmq-basics.md](../rabbitmq-basics.md), [rabbitmq-cheatsheet.md](../rabbitmq-cheatsheet.md).

@@ -48,6 +48,8 @@ Two stages (**multi-stage build**): the first is a big "factory" with build tool
 
 ## How Docker Compose works
 
+![Docker containers](images/04-docker.svg)
+
 ```yaml
 services:
   db:                                  # service name = address for other containers
