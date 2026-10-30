@@ -5,10 +5,13 @@ import com.hapi.gridwatch.alert.dto.WorkOrderCreatedEvent;
 import com.hapi.gridwatch.alert.exception.InvalidReadingException;
 import com.hapi.gridwatch.alert.repository.ReadingRepository;
 import com.hapi.gridwatch.alert.repository.WorkOrderRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -33,6 +36,8 @@ public class ReadingServiceTest {
     @InjectMocks
     ReadingService readingService;
 
+    @Spy
+    MeterRegistry meterRegistry = new SimpleMeterRegistry();
 
     private ReadingRestRequest reading(String sensorType, Double value){
         return new ReadingRestRequest(

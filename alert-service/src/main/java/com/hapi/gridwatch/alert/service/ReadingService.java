@@ -10,6 +10,7 @@ import com.hapi.gridwatch.alert.model.ReadingEntity;
 import com.hapi.gridwatch.alert.model.WorkOrderEntity;
 import com.hapi.gridwatch.alert.repository.ReadingRepository;
 import com.hapi.gridwatch.alert.repository.WorkOrderRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +25,13 @@ public class ReadingService {
     private final ReadingRepository readingRepository;
     private final WorkOrderRepository workOrderRepository;
     private final ApplicationEventPublisher workOrderPublisher;
+    private final MeterRegistry meterRegistry;
 
-    public ReadingService(ReadingRepository readingRepository, WorkOrderRepository workOrderRepository, ApplicationEventPublisher workOrderPublisher) {
+    public ReadingService(ReadingRepository readingRepository, WorkOrderRepository workOrderRepository, ApplicationEventPublisher workOrderPublisher, MeterRegistry meterRegistry) {
         this.readingRepository = readingRepository;
         this.workOrderRepository = workOrderRepository;
         this.workOrderPublisher = workOrderPublisher;
+        this.meterRegistry = meterRegistry;
     }
 
 
@@ -81,6 +84,12 @@ public class ReadingService {
                                 readingEntity.getSensorType().limit
                 )
         );
+
+        meterRegistry.counter(
+                "gridwatch.work_orders.created",
+                "sensor",
+                readingEntity.getSensorType().name()
+        ).increment();
 
         // send to rabbitmq
         workOrderPublisher.publishEvent(

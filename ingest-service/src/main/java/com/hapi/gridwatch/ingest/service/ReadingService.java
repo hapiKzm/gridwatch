@@ -5,6 +5,7 @@ import com.hapi.gridwatch.ingest.dto.UserReadingRequest;
 import com.hapi.gridwatch.ingest.enums.SensorTypeOption;
 import com.hapi.gridwatch.ingest.exception.InvalidReadingException;
 import com.hapi.gridwatch.ingest.rest.ReadingRestRequest;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,13 +22,16 @@ public class ReadingService {
     private static final Logger log = LoggerFactory.getLogger(ReadingService.class);
     private final KafkaTemplate<String, ReadingRestRequest> kafka;
     private final String topic;
+    private final MeterRegistry meterRegistry;
 
     public ReadingService(
             KafkaTemplate<String, ReadingRestRequest> kafka,
-            @Value("${kafka-topic.reading}") String topic
+            @Value("${kafka-topic.reading}") String topic,
+            MeterRegistry meterRegistry
     ) {
         this.kafka = kafka;
         this.topic = topic;
+        this.meterRegistry = meterRegistry;
     }
 
     public UUID publish(UserReadingRequest in) {
@@ -54,6 +58,7 @@ public class ReadingService {
                     result.getRecordMetadata().partition(),
                     result.getRecordMetadata().offset()
             );
+            meterRegistry.counter("gridwatch.readings.received").increment();
             return id;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

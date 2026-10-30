@@ -4,10 +4,13 @@ import com.hapi.gridwatch.ingest.dto.UserReadingRequest;
 import com.hapi.gridwatch.ingest.exception.InvalidReadingException;
 import com.hapi.gridwatch.ingest.exception.KafkaUnavailableException;
 import com.hapi.gridwatch.ingest.rest.ReadingRestRequest;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -29,11 +32,12 @@ class ReadingServiceTest {
     @Mock
     KafkaTemplate<String, ReadingRestRequest> kafka;
 
+
     ReadingService readingService;
 
     @BeforeEach
     void setup() {
-        readingService = new ReadingService(kafka, "gridwatch.readings");
+        readingService = new ReadingService(kafka, "gridwatch.readings", new SimpleMeterRegistry());
     }
 
     private UserReadingRequest request(String sensorType) {

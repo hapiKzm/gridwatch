@@ -4,10 +4,13 @@ package com.hapi.gridwatch.notifier.service;
 import com.hapi.gridwatch.notifier.dto.WorkOrderCreatedEvent;
 import com.hapi.gridwatch.notifier.mail.EmailService;
 import com.hapi.gridwatch.notifier.repository.SentNotificationRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.MailSendException;
 
@@ -27,6 +30,9 @@ public class NotificationServiceTest {
 
     @InjectMocks
     NotificationService notificationService;
+
+    @Spy
+    MeterRegistry meterRegistry = new SimpleMeterRegistry();
 
     private WorkOrderCreatedEvent workOrderCreatedEvent(){
         return new WorkOrderCreatedEvent(
