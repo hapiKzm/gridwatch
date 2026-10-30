@@ -72,6 +72,7 @@ gridwatch/
 **Everything in Docker (default):**
 
 ```bash
+cp .env.example .env          # once, then fill in your own passwords
 docker compose up -d --build  # db, kafka, rabbitmq, mailpit, alert, ingest, notifier
 docker compose ps             # db and kafka (healthy), services Up
 ```
@@ -96,7 +97,7 @@ Then start `AlertServiceApplication`, `IngestServiceApplication` and `NotifierSe
 | Kafka | localhost:9092 (inside Docker: kafka:29092) |
 | Health checks | `/actuator/health` on every service, no login |
 
-Credentials for local development are in each service's `application.yaml`. They are local-only values and will move to environment variables before the repository goes public.
+Passwords come from environment variables. Docker Compose reads them from `.env` (copy `.env.example`; never commit `.env`). From IntelliJ and in tests, the local defaults in each service's `application.yaml` are used.
 
 ## Conventions
 

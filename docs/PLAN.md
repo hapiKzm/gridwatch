@@ -59,10 +59,10 @@ Notes: [week-04-testing.md](weeks/week-04-testing.md) · Reference: [testing-che
 Reference: [docker-basics.md](docker-basics.md)
 
 - [x] Passwords moved to `.env` and environment variables
-- [ ] Confirm the flow with `.env` (one reading, one email) and commit
-- [ ] Add the `.env` setup step to the README and week 0 notes
-- [ ] Check the repo for anything that should not be public
-- [ ] Make the repo public and pin it
+- [x] Confirm the flow with `.env` (one reading, one email) and commit
+- [x] Add the `.env` setup step to the README and week 0 notes
+- [x] Check the repo for anything that should not be public
+- [ ] Make the repo public and pin it (private for now, by choice)
 - [ ] Add "Currently building GridWatch" to the GitHub profile README
 
 ## Week 5: CI and monitoring (16-22 Nov)

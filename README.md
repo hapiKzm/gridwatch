@@ -67,6 +67,7 @@ All services expose `GET /actuator/health` (no login) and metrics for Prometheus
 Requirements: Docker. (Java 21 only to run the services from an IDE.)
 
 ```bash
+cp .env.example .env        # then fill in your own passwords
 docker compose up -d --build
 ```
 

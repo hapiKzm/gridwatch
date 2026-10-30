@@ -22,5 +22,6 @@ jobs:
           java-version: 21
           cache: maven
       - run: ./mvnw -B verify
+      - run: docker build -t gridwatch/${{ matrix.service }}:${{ github.sha }} .
 
 
