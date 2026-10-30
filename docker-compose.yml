@@ -66,6 +66,16 @@ services:
       - "9090:9090"
     volumes:
       - "./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+  grafana:
+    image: grafana/grafana:12.1.0
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
 
 
   alert:
