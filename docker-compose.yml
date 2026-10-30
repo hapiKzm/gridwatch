@@ -60,6 +60,12 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
 
 
   alert:
