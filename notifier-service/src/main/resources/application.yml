@@ -41,3 +41,9 @@ rabbit:
 notifier:
   from: gridwatch@local.test
   to: technicians@local.test
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus

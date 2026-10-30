@@ -59,3 +59,9 @@ kafka-topic:
 rabbit:
   exchange: 'gridwatch.work-orders'
   routing-key: 'work-order.created'
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus

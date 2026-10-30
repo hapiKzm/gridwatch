@@ -24,5 +24,9 @@ spring:
 
 kafka-topic:
   reading: 'gridwatch.readings'
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
 

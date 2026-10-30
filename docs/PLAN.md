@@ -69,9 +69,9 @@ Reference: [docker-basics.md](docker-basics.md)
 
 Reference: [testing-cheatsheet.md](testing-cheatsheet.md), [docker-basics.md](docker-basics.md)
 
-- [ ] GitHub Actions: `verify` for all three services on every push
-- [ ] Mark `mvnw` as executable in Git
-- [ ] GitHub Actions: build the Docker images
+- [x] GitHub Actions: `verify` for all three services on every push
+- [x] Mark `mvnw` as executable in Git
+- [x] GitHub Actions: build the Docker images
 - [ ] Actuator + Micrometer metrics
 - [ ] Prometheus in Docker Compose
 - [ ] Grafana dashboard: readings per second, alerts, errors

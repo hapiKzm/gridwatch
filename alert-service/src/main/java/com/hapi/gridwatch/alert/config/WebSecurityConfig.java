@@ -20,7 +20,7 @@ class WebSecurityConfig {
 				.csrf(AbstractHttpConfigurer::disable)
 				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/actuator/health/**").permitAll()
+						.requestMatchers("/actuator/health/**", "/actuator/prometheus").permitAll()
 						.anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults());
 		return http.build();
