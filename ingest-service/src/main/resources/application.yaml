@@ -7,7 +7,7 @@ spring:
   security:
     user:
       name: user
-      password: password
+      password: ${INGEST_API_PASSWORD:password}
   kafka:
     bootstrap-servers: localhost:9092 # in Docker: kafka:29092 (via environment variable)
     producer:

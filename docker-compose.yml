@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: gridwatch
       POSTGRES_USER: gridwatch
-      POSTGRES_PASSWORD: gridwatch-local
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U gridwatch -d gridwatch" ]
       interval: 5s
@@ -47,7 +47,7 @@ services:
       - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: gridwatch
-      RABBITMQ_DEFAULT_PASS: gridwatch-local
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     volumes:
       - rabbitmq:/var/lib/rabbitmq
     healthcheck:
@@ -70,6 +70,9 @@ services:
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gridwatch
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      SPRING_SECURITY_USER_PASSWORD: ${ALERT_API_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
@@ -83,6 +86,7 @@ services:
       - "8082:8082"
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SPRING_SECURITY_USER_PASSWORD: ${INGEST_API_PASSWORD}
     depends_on:
       kafka:
         condition: service_healthy
@@ -95,6 +99,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/notifier
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_MAIL_HOST: mailpit
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
     depends_on:
       db:
         condition: service_healthy

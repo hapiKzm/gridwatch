@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5435/notifier
     username: gridwatch
-    password: gridwatch-local
+    password: ${DB_PASSWORD:gridwatch-local}
   jpa:
     show-sql: false
     hibernate:
@@ -16,7 +16,7 @@ spring:
     host: localhost
     port: 5672
     username: gridwatch
-    password: gridwatch-local
+    password: ${RABBITMQ_PASSWORD:gridwatch-local}
     listener:
       simple:
         default-requeue-rejected: false

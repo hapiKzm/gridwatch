@@ -10,11 +10,11 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5435/gridwatch
     username: gridwatch
-    password: gridwatch-local
+    password: ${DB_PASSWORD:gridwatch-local}
   security:
     user:
       name: gridwatch
-      password: gridwatch-local-api
+      password: ${ALERT_API_PASSWORD:gridwatch-local-api}
   kafka:
     bootstrap-servers: localhost:9092 # in Docker: kafka:29092 (via environment variable)
     consumer:
@@ -41,7 +41,7 @@ spring:
     host: localhost
     port: 5672
     username: gridwatch
-    password: gridwatch-local
+    password: ${RABBITMQ_PASSWORD:gridwatch-local}
     publisher-confirm-type: correlated # broker confirms each message
     publisher-returns: true # tell me if no queue matched
     template:
