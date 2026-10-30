@@ -57,7 +57,7 @@ alert-service/mvnw -f alert-service/pom.xml clean verify    # unit + integration
 notifier-service/mvnw -f notifier-service/pom.xml clean verify
 ```
 
-Results: alert 5 unit + 3 integration, notifier 3 unit + 2 integration, all passing.
+Results: ingest 8 unit and web + 1 integration, alert 5 unit + 3 integration, notifier 3 unit + 2 integration, all passing. Explained step by step in [testing-cheatsheet.md](../testing-cheatsheet.md).
 
 ## Design decisions
 
