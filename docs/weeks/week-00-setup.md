@@ -73,7 +73,7 @@ gridwatch/
 
 ```bash
 cp .env.example .env          # once, then fill in your own passwords
-docker compose up -d --build  # db, kafka, rabbitmq, mailpit, alert, ingest, notifier
+docker compose up -d --build  # all services, brokers, mailpit, prometheus, grafana
 docker compose ps             # db and kafka (healthy), services Up
 ```
 
@@ -95,7 +95,10 @@ Then start `AlertServiceApplication`, `IngestServiceApplication` and `NotifierSe
 | Mailpit | SMTP localhost:1025 (inside Docker: mailpit:1025), inbox http://localhost:8025 |
 | PostgreSQL | localhost:5435, databases `gridwatch` (alert) and `notifier` |
 | Kafka | localhost:9092 (inside Docker: kafka:29092) |
+| Prometheus | http://localhost:9090 |
+| Grafana | http://localhost:3000, user `admin`, password from `.env` |
 | Health checks | `/actuator/health` on every service, no login |
+| Metrics | `/actuator/prometheus` on every service, no login |
 
 Passwords come from environment variables. Docker Compose reads them from `.env` (copy `.env.example`; never commit `.env`). From IntelliJ and in tests, the local defaults in each service's `application.yaml` are used.
 

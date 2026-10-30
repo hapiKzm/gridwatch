@@ -77,8 +77,9 @@ docker compose up -d --build
 | Work orders | http://localhost:8081/work-orders |
 | RabbitMQ dashboard | http://localhost:15672 |
 | Test email inbox (Mailpit) | http://localhost:8025 |
+| Prometheus | http://localhost:9090 |
+| Grafana dashboard | http://localhost:3000 |
 
-The `notifier` database is created once: `docker compose exec db psql -U gridwatch -d gridwatch -c "create database notifier;"`
 
 Send a reading (credentials are set in the service configuration):
 

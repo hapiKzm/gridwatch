@@ -2,7 +2,7 @@
 
 Week by week, from the learning plan (version 4). `[x]` = done and verified, `[ ]` = open. Dates are the plan's targets.
 
-**Status 30 Oct 2026:** weeks 0-4 are built and tested. Next: finish making the repo public, then week 5.
+**Status 30 Oct 2026:** weeks 0-5 are built and tested. The repo stays private for now. Next: sensor simulator, then week 6.
 
 Tutorials (PDFs outside this repo, in the personal `Learning` folder): Kafka Tutorial, RabbitMQ Tutorial, Project Learning Plan.
 
@@ -67,15 +67,17 @@ Reference: [docker-basics.md](docker-basics.md)
 
 ## Week 5: CI and monitoring (16-22 Nov)
 
-Reference: [testing-cheatsheet.md](testing-cheatsheet.md), [docker-basics.md](docker-basics.md)
+Notes: [week-05-ci-monitoring.md](weeks/week-05-ci-monitoring.md)
+
+Reference: [monitoring-cheatsheet.md](monitoring-cheatsheet.md), [testing-cheatsheet.md](testing-cheatsheet.md), [docker-basics.md](docker-basics.md)
 
 - [x] GitHub Actions: `verify` for all three services on every push
 - [x] Mark `mvnw` as executable in Git
 - [x] GitHub Actions: build the Docker images
-- [ ] Actuator + Micrometer metrics
-- [ ] Prometheus in Docker Compose
-- [ ] Grafana dashboard: readings per second, alerts, errors
-- [ ] Done when: green check on every push, and the dashboard shows readings per second and alert counts
+- [x] Actuator + Micrometer metrics
+- [x] Prometheus in Docker Compose
+- [x] Grafana dashboard: readings per second, alerts, errors
+- [x] Done when: green check on every push, and the dashboard shows readings per second and alert counts
 
 ## Week 6: Kubernetes and AWS (23-29 Nov)
 
