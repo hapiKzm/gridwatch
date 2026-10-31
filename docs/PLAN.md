@@ -2,7 +2,7 @@
 
 Week by week, from the learning plan (version 4). `[x]` = done and verified, `[ ]` = open. Dates are the plan's targets.
 
-**Status 30 Oct 2026:** weeks 0-5 are built and tested. The repo stays private for now. Next: week 6.
+**Status 30 Oct 2026:** weeks 0-5 are built and tested. The repo stays private for now. Next: self-test, then week 6.
 
 Tutorials (PDFs outside this repo, in the personal `Learning` folder): Kafka Tutorial, RabbitMQ Tutorial, Project Learning Plan.
 
@@ -78,6 +78,20 @@ Reference: [monitoring-cheatsheet.md](monitoring-cheatsheet.md), [testing-cheats
 - [x] Prometheus in Docker Compose
 - [x] Grafana dashboard: readings per second, alerts, errors
 - [x] Done when: green check on every push, and the dashboard shows readings per second and alert counts
+
+## Self-test before week 6
+
+Reference: [self-test.md](self-test.md)
+
+- [ ] 1. Flyway: add a column
+- [ ] 2. RabbitMQ: a second event
+- [ ] 3. RabbitMQ: a second consumer
+- [ ] 4. Kafka: groups and instances
+- [ ] 5. Kafka: lag
+- [ ] 6. Testing: the failure paths
+- [ ] 7. Grafana: see failures
+- [ ] 8. The whole system
+- [ ] All questions answered without looking
 
 ## Week 6: Kubernetes and AWS (23-29 Nov)
 

@@ -74,6 +74,7 @@ gridwatch/
 ```bash
 cp .env.example .env          # once, then fill in your own passwords
 docker compose up -d --build  # all services, brokers, mailpit, prometheus, grafana
+docker compose --profile simulator up -d --build  # optional: also send readings automatically
 docker compose ps             # db and kafka (healthy), services Up
 ```
 
