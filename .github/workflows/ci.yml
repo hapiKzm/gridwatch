@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [ingest-service, alert-service, notifier-service]
+        service: [ingest-service, alert-service, notifier-service, sensor-simulator]
     defaults:
       run:
         working-directory: ${{ matrix.service }}

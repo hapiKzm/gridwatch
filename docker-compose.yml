@@ -126,6 +126,14 @@ services:
       mailpit:
         condition: service_healthy
 
+  simulator:
+    build: ./sensor-simulator
+    profiles: ["simulator"]
+    environment:
+      SIMULATOR_INGEST_URL: http://ingest:8082/api/readings
+      INGEST_API_PASSWORD: ${INGEST_API_PASSWORD}
+    depends_on:
+      - ingest
 volumes:
   postgres-data:
   kafka:

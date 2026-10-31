@@ -1,0 +1,9 @@
+spring:
+  main:
+    web-application-type: none
+
+simulator:
+  ingest-url: http://localhost:8082/api/readings
+  username: user
+  password: ${INGEST_API_PASSWORD:password}
+  interval-ms: 100

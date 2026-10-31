@@ -2,7 +2,7 @@
 
 Week by week, from the learning plan (version 4). `[x]` = done and verified, `[ ]` = open. Dates are the plan's targets.
 
-**Status 30 Oct 2026:** weeks 0-5 are built and tested. The repo stays private for now. Next: sensor simulator, then week 6.
+**Status 30 Oct 2026:** weeks 0-5 are built and tested. The repo stays private for now. Next: week 6.
 
 Tutorials (PDFs outside this repo, in the personal `Learning` folder): Kafka Tutorial, RabbitMQ Tutorial, Project Learning Plan.
 
@@ -113,6 +113,6 @@ Reference: [monitoring-cheatsheet.md](monitoring-cheatsheet.md), [testing-cheats
 - [ ] README: "AWS vs Azure" note
 - [ ] Done when: the public URL shows an alert, the resource group is deleted, and the note is in the README
 
-## Not built yet, not assigned to a week
+## Extra, not assigned to a week
 
-- [ ] Sensor simulator (in the plan's architecture; readings are sent by hand from Postman today)
+- [x] Sensor simulator: `docker compose --profile simulator up -d --build`
