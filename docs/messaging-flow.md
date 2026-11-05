@@ -68,7 +68,7 @@ flowchart TB
 
 | Piece | What it does |
 |---|---|
-| **Publisher** (alert) | Sends `WorkOrderCreatedEvent` only after the work order is committed |
+| **Publisher** (alert) | Sends `WorkOrderEvent` only after the work order is committed |
 | **Exchange** (topic type) | Receives every message, routes it by routing key |
 | **Routing key** `work-order.created` | Label on the message |
 | **Binding** `work-order.*` | Rule: matching messages go to the notifier queue |

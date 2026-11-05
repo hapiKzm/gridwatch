@@ -1,6 +1,6 @@
 package com.hapi.gridwatch.alert.rabbit;
 
-import com.hapi.gridwatch.alert.dto.WorkOrderCreatedEvent;
+import com.hapi.gridwatch.alert.dto.WorkOrderEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -27,7 +27,7 @@ public class WorkOrderPublisher {
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void workOrderCreated(WorkOrderCreatedEvent event) {
+    public void workOrderCreated(WorkOrderEvent event) {
         rabbit.convertAndSend(exchange, routingKey, event);
         log.info("Published work order {} to RabbitMQ", event.workOrderId());
     }

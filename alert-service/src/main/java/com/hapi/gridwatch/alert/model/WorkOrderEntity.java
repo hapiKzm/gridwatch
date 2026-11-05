@@ -1,6 +1,6 @@
 package com.hapi.gridwatch.alert.model;
 
-import com.hapi.gridwatch.alert.enums.WorkOrderStatusOption;
+import com.hapi.gridwatch.alert.enums.WorkOrderType;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -23,7 +23,7 @@ public class WorkOrderEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "work_order_status", nullable = false)
-    private WorkOrderStatusOption workOrderStatus;
+    private WorkOrderType workOrderStatus;
 
     @CreationTimestamp
     @Column(nullable = false)
@@ -32,10 +32,12 @@ public class WorkOrderEntity {
     @UpdateTimestamp
     private Instant updatedAt;
 
+    private Instant closedAt;
+
     public WorkOrderEntity() {
     }
 
-    public WorkOrderEntity(ReadingEntity readingEntity, WorkOrderStatusOption workOrderStatus, String reason) {
+    public WorkOrderEntity(ReadingEntity readingEntity, WorkOrderType workOrderStatus, String reason) {
         this.substationId = readingEntity.getSubstationId();
         this.workOrderStatus = workOrderStatus;
         this.reason = reason;
@@ -76,10 +78,17 @@ public class WorkOrderEntity {
         this.reason = reason;
     }
 
-    public WorkOrderStatusOption getWorkOrderStatus() {
+    public WorkOrderType getWorkOrderStatus() {
         return workOrderStatus;
     }
-    public void setWorkOrderStatus(WorkOrderStatusOption workOrderStatus) {
+    public void setWorkOrderStatus(WorkOrderType workOrderStatus) {
         this.workOrderStatus = workOrderStatus;
+    }
+
+    public Instant getClosedAt() {
+        return closedAt;
+    }
+    public void setClosedAt(Instant closedAt) {
+        this.closedAt = closedAt;
     }
 }

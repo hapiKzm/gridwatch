@@ -1,7 +1,7 @@
 package com.hapi.gridwatch.notifier.rabbit;
 
 
-import com.hapi.gridwatch.notifier.dto.WorkOrderCreatedEvent;
+import com.hapi.gridwatch.notifier.dto.WorkOrderEvent;
 import com.hapi.gridwatch.notifier.service.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,15 +22,16 @@ public class WorkOrderListener {
     }
 
     @RabbitListener(queues = "${rabbit.queue}")
-    public void receiveWorkOrderCreatedEvent(WorkOrderCreatedEvent workOrderCreatedEvent){
-        validateWorkOrderCreatedEvent(workOrderCreatedEvent);
-        notificationService.notifyOnce(workOrderCreatedEvent);
+    public void receiveWorkOrderEvent(WorkOrderEvent workOrderEvent){
+        validateWorkOrderEvent(workOrderEvent);
+        notificationService.notifyOnce(workOrderEvent);
     }
 
-    private void validateWorkOrderCreatedEvent(WorkOrderCreatedEvent workOrderCreatedEvent){
-        if (!StringUtils.hasText(workOrderCreatedEvent.substationId())) throw new AmqpRejectAndDontRequeueException("substationId is required");
-        if (!StringUtils.hasText(workOrderCreatedEvent.reason())) throw new AmqpRejectAndDontRequeueException("reason is required");
-        if (workOrderCreatedEvent.workOrderId() == null) throw new AmqpRejectAndDontRequeueException("workOrderId is required");
-        if (workOrderCreatedEvent.createdAt() == null) throw new AmqpRejectAndDontRequeueException("time is required");
+    private void validateWorkOrderEvent(WorkOrderEvent workOrderEvent){
+        if (!StringUtils.hasText(workOrderEvent.substationId())) throw new AmqpRejectAndDontRequeueException("substationId is required");
+        if (!StringUtils.hasText(workOrderEvent.reason())) throw new AmqpRejectAndDontRequeueException("reason is required");
+        if (workOrderEvent.workOrderId() == null) throw new AmqpRejectAndDontRequeueException("workOrderId is required");
+        if (workOrderEvent.createdAt() == null) throw new AmqpRejectAndDontRequeueException("time is required");
+        if (workOrderEvent.workOrderType() == null) throw new AmqpRejectAndDontRequeueException("status is required");
     }
 }

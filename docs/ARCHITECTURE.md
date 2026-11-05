@@ -155,7 +155,7 @@ classDiagram
         Long id
         String substationId
         String reason
-        WorkOrderStatusOption workOrderStatus
+        WorkOrderStatusOption workOrderType
         Instant createdAt
         Instant updatedAt
     }

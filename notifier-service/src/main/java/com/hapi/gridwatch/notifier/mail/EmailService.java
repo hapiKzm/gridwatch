@@ -1,7 +1,8 @@
 package com.hapi.gridwatch.notifier.mail;
 
 
-import com.hapi.gridwatch.notifier.dto.WorkOrderCreatedEvent;
+import com.hapi.gridwatch.notifier.dto.WorkOrderEvent;
+import com.hapi.gridwatch.notifier.types.WorkOrderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,10 +24,10 @@ public class EmailService {
         this.to = to;
     }
 
-    public void sendWorkOrderCreated(WorkOrderCreatedEvent event) {
+    public void sendWorkOrder(WorkOrderEvent event) {
         String  subject = "work order " +
                 event.workOrderId() +
-                " created at " +
+                (event.workOrderType() == WorkOrderType.CLOSED ? " closed at " : " created at " ) +
                 event.substationId();
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
@@ -37,6 +38,8 @@ public class EmailService {
 
         mailSender.send(simpleMailMessage);
 
-        logger.info("Email sent for work order {}", event.workOrderId());
+        logger.info(
+                "{} Email sent for work order {}", event.workOrderType(), event.workOrderId()
+        );
     }
 }

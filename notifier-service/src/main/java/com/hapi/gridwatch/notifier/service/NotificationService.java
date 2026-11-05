@@ -1,9 +1,10 @@
 package com.hapi.gridwatch.notifier.service;
 
 
-import com.hapi.gridwatch.notifier.dto.WorkOrderCreatedEvent;
+import com.hapi.gridwatch.notifier.dto.WorkOrderEvent;
 import com.hapi.gridwatch.notifier.mail.EmailService;
 import com.hapi.gridwatch.notifier.model.SentNotificationEntity;
+import com.hapi.gridwatch.notifier.model.SentNotificationPkEntity;
 import com.hapi.gridwatch.notifier.repository.SentNotificationRepository;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
@@ -26,22 +27,26 @@ public class NotificationService {
 
 
     @Transactional
-    public void notifyOnce(WorkOrderCreatedEvent workOrderCreatedEvent) {
-        boolean sendNotification = sentNotificationRepository.existsById(workOrderCreatedEvent.workOrderId());
+    public void notifyOnce(WorkOrderEvent workOrderEvent) {
+
+        SentNotificationPkEntity sentNotificationPkEntity = new SentNotificationPkEntity(
+                workOrderEvent.workOrderId(),
+                workOrderEvent.workOrderType()
+        );
+        boolean sendNotification =
+                sentNotificationRepository.existsById(sentNotificationPkEntity);
         if (sendNotification) {
-            log.info("Already notified for work order {}", workOrderCreatedEvent.workOrderId());
+            log.info("Already notified for work order {}", workOrderEvent.workOrderId());
             return;
         }
-        saveNotification(workOrderCreatedEvent);
-        emailService.sendWorkOrderCreated(workOrderCreatedEvent);
+        saveNotification(sentNotificationPkEntity);
+        emailService.sendWorkOrder(workOrderEvent);
         meterRegistry.counter("gridwatch.notifications.sent").increment();
     }
 
-    private void saveNotification(WorkOrderCreatedEvent workOrderCreatedEvent) {
-
-        SentNotificationEntity notification =
-                new SentNotificationEntity(workOrderCreatedEvent.workOrderId());
-
+    private void saveNotification(SentNotificationPkEntity id) {
+        SentNotificationEntity notification = new SentNotificationEntity();
+        notification.setId(id);
         sentNotificationRepository.save(notification);
     }
 }

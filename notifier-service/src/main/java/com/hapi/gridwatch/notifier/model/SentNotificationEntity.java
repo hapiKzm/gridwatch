@@ -1,9 +1,6 @@
 package com.hapi.gridwatch.notifier.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
@@ -12,25 +9,28 @@ import java.time.Instant;
 @Table(name = "sent_notification")
 public class SentNotificationEntity {
 
-    @Id
-    private Long workOrderId;
+    @EmbeddedId
+    private SentNotificationPkEntity id;
 
     @CreationTimestamp
     @Column(nullable = false)
     private Instant sentAt;
 
-    protected SentNotificationEntity() {
-    }
 
-    public SentNotificationEntity(Long workOrderId) {
-        this.workOrderId = workOrderId;
-    }
+    public SentNotificationEntity() {}
 
-    public Long getWorkOrderId() {
-        return workOrderId;
+    public SentNotificationPkEntity getId() {
+        return id;
+    }
+    public void setId(SentNotificationPkEntity id) {
+        this.id = id;
     }
 
     public Instant getSentAt() {
         return sentAt;
+    }
+
+    public void setSentAt(Instant sentAt) {
+        this.sentAt = sentAt;
     }
 }

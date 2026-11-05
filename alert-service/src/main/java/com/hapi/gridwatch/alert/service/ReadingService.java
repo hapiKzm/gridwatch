@@ -1,11 +1,12 @@
 package com.hapi.gridwatch.alert.service;
 
-import com.hapi.gridwatch.alert.dto.WorkOrderCreatedEvent;
+import com.hapi.gridwatch.alert.dto.WorkOrderEvent;
 import com.hapi.gridwatch.alert.exception.InvalidReadingException;
 import com.hapi.gridwatch.alert.dto.ReadingRestRequest;
 import com.hapi.gridwatch.alert.dto.WorkOrderDto;
 import com.hapi.gridwatch.alert.enums.SensorTypeOption;
-import com.hapi.gridwatch.alert.enums.WorkOrderStatusOption;
+import com.hapi.gridwatch.alert.enums.WorkOrderType;
+import com.hapi.gridwatch.alert.exception.WorkOrderNotFoundException;
 import com.hapi.gridwatch.alert.model.ReadingEntity;
 import com.hapi.gridwatch.alert.model.WorkOrderEntity;
 import com.hapi.gridwatch.alert.repository.ReadingRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,7 +80,7 @@ public class ReadingService {
         WorkOrderEntity workOrder = workOrderRepository.save(
                 new WorkOrderEntity(
                         readingEntity,
-                        WorkOrderStatusOption.OPEN,
+                        WorkOrderType.OPEN,
                         readingEntity.getSensorType() + " " +
                                 readingEntity.getValue() + " above limit " +
                                 readingEntity.getSensorType().limit
@@ -93,11 +95,12 @@ public class ReadingService {
 
         // send to rabbitmq
         workOrderPublisher.publishEvent(
-                new WorkOrderCreatedEvent(
+                new WorkOrderEvent(
                         workOrder.getId(),
                         workOrder.getSubstationId(),
                         workOrder.getReason(),
-                        workOrder.getCreatedAt()
+                        workOrder.getCreatedAt(),
+                        WorkOrderType.OPEN
                 )
         );
     }
@@ -113,5 +116,29 @@ public class ReadingService {
                         m.getCreatedAt()
                         )
                 ).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void closeWorkOrder(Long workOrderId){
+        WorkOrderEntity wo =
+                workOrderRepository.findById(workOrderId).orElseThrow(
+                        () -> new WorkOrderNotFoundException("WORK ORDER NOT FOUND")
+                );
+
+        if (wo.getClosedAt() != null) return;
+
+        wo.setClosedAt(Instant.now());
+        wo.setWorkOrderStatus(WorkOrderType.CLOSED);
+        workOrderRepository.save(wo);
+
+        workOrderPublisher.publishEvent(
+                new WorkOrderEvent(
+                        wo.getId(),
+                        wo.getSubstationId(),
+                        wo.getReason(),
+                        wo.getCreatedAt(),
+                        WorkOrderType.CLOSED
+                )
+        );
     }
 }

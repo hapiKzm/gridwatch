@@ -2,6 +2,8 @@ package com.hapi.gridwatch.alert;
 
 
 import com.hapi.gridwatch.alert.dto.ReadingRestRequest;
+import com.hapi.gridwatch.alert.enums.WorkOrderType;
+import com.hapi.gridwatch.alert.model.WorkOrderEntity;
 import com.hapi.gridwatch.alert.repository.ReadingRepository;
 import com.hapi.gridwatch.alert.repository.WorkOrderRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,22 +16,27 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.rabbitmq.RabbitMQContainer;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Testcontainers
+@AutoConfigureMockMvc
 public class AlertFlowIT {
 
     @Container
@@ -59,6 +66,8 @@ public class AlertFlowIT {
     @Autowired
     KafkaTemplate<Object, Object> kafkaTemplate;
 
+    @Autowired
+    MockMvc mockMvc;
 
     @BeforeEach
     void binding() {
@@ -116,4 +125,26 @@ public class AlertFlowIT {
         assertThat(new String(message.getBody())).contains("\"substationId\":\"DEV-01\"");
     }
 
+    @Test
+    void closeWorkOrderSavesAndPublishesClosed() throws Exception {
+        ReadingRestRequest reading = send("TEMPERATURE", 95.0);
+        await().atMost(Duration.ofSeconds(15)).until(() -> readingRepository.existsById(reading.id()));
+        assertThat(workOrderRepository.count()).isEqualTo(1);
+
+        Long id = workOrderRepository.findAll().getFirst().getId();
+
+        amqpAdmin.purgeQueue("test.work-orders", false);
+
+        mockMvc.perform(post("/work-orders/" + id + "/close")
+                        .with(httpBasic("gridwatch", "gridwatch-local-api")))
+                .andExpect(status().isOk());
+
+        WorkOrderEntity closed = workOrderRepository.findById(id).orElseThrow();
+        assertThat(closed.getWorkOrderStatus()).isEqualTo(WorkOrderType.CLOSED);
+        assertThat(closed.getClosedAt()).isNotNull();
+
+        Message message = rabbitTemplate.receive("test.work-orders", 5000);
+        assertThat(message).isNotNull();
+        assertThat(new String(message.getBody())).contains("\"workOrderType\":\"CLOSED\"");
+    }
 }

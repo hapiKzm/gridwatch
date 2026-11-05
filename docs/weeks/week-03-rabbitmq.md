@@ -23,7 +23,7 @@ flowchart TB
 
 ### alert-service (publisher)
 - `spring-boot-starter-amqp`, topic exchange `gridwatch.work-orders`, JSON message converter.
-- After saving a work order, `ReadingService` publishes an in-app `WorkOrderCreatedEvent`.
+- After saving a work order, `ReadingService` publishes an in-app `WorkOrderEvent`.
 - `WorkOrderPublisher` (`@TransactionalEventListener(AFTER_COMMIT)`) sends it to RabbitMQ only when the database transaction committed.
 - alert knows only the exchange and routing key, not the queue.
 
