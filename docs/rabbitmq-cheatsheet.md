@@ -57,7 +57,7 @@ spring:
       mandatory: true
 rabbit:
   exchange: gridwatch.work-orders
-  routing-key: work-order.created
+  routing-key-prefix: work-order         # key = prefix + "." + type (open, closed)
 ```
 
 ```java
@@ -79,13 +79,14 @@ Send only after the database commit:
 
 ```java
 // ReadingService, inside the @Transactional method
-applicationEventPublisher.publishEvent(new WorkOrderCreatedEvent(...));
+applicationEventPublisher.publishEvent(new WorkOrderEvent(..., WorkOrderType.OPEN));
 
 // WorkOrderPublisher
 @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-public void workOrderCreated(WorkOrderCreatedEvent event) {
-    rabbit.convertAndSend(exchange, routingKey, event);
-    log.info("Published work order {} to RabbitMQ", event.workOrderId());
+public void workOrderEvent(WorkOrderEvent event) {
+    String routingKey = routingKeyPrefix + "." + event.workOrderType().name().toLowerCase(Locale.ROOT);
+    rabbit.convertAndSend(exchange, routingKey, event);   // work-order.open or work-order.closed
+    log.info("Published work order {} to RabbitMQ with key {}", event.workOrderId(), routingKey);
 }
 ```
 

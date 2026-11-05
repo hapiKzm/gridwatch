@@ -58,7 +58,7 @@ kafka-topic:
 
 rabbit:
   exchange: 'gridwatch.work-orders'
-  routing-key: 'work-order.created'
+  routing-key-prefix: 'work-order'
 
 management:
   endpoints:

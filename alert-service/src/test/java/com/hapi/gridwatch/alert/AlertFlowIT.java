@@ -146,5 +146,6 @@ public class AlertFlowIT {
         Message message = rabbitTemplate.receive("test.work-orders", 5000);
         assertThat(message).isNotNull();
         assertThat(new String(message.getBody())).contains("\"workOrderType\":\"CLOSED\"");
+        assertThat(message.getMessageProperties().getReceivedRoutingKey()).isEqualTo("work-order.closed");
     }
 }
