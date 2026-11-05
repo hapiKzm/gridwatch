@@ -3,6 +3,7 @@ package com.hapi.gridwatch.notifier;
 import com.hapi.gridwatch.notifier.dto.WorkOrderEvent;
 import com.hapi.gridwatch.notifier.model.SentNotificationPkEntity;
 import com.hapi.gridwatch.notifier.repository.SentNotificationRepository;
+import com.hapi.gridwatch.notifier.service.AuditService;
 import com.hapi.gridwatch.notifier.types.WorkOrderType;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -47,6 +48,9 @@ public class NotificationFlowIT {
 
     @Autowired
     SentNotificationRepository sentNotificationRepository;
+
+    @MockitoBean
+    AuditService auditService;
 
     private void send(Long workOrderId, WorkOrderType workOrderType) {
         WorkOrderEvent event = new WorkOrderEvent(workOrderId, "DEV-01", "LOAD 130 above limit 100", Instant.now(), workOrderType);
@@ -100,5 +104,13 @@ public class NotificationFlowIT {
         SentNotificationPkEntity sentNotificationPkEntity = createSentNotificationPkEntity(400L, WorkOrderType.CLOSED);
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> verify(mailSender, times(3)).send(argThat((SimpleMailMessage m) -> m.getSubject().contains("400"))));
         assertThat(sentNotificationRepository.existsById(sentNotificationPkEntity)).isFalse();
+    }
+
+    @Test
+    void eventAlsoReachesAuditQueue() {
+        send(500L, WorkOrderType.OPEN);
+
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() ->
+                verify(auditService).saveLog(argThat(e -> e.workOrderId().equals(500L))));
     }
 }

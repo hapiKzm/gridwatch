@@ -83,9 +83,9 @@ Reference: [monitoring-cheatsheet.md](monitoring-cheatsheet.md), [testing-cheats
 
 Reference: [self-test.md](self-test.md)
 
-- [ ] 1. Flyway: add a column
-- [ ] 2. RabbitMQ: a second event
-- [ ] 3. RabbitMQ: a second consumer
+- [x] 1. Flyway: add a column
+- [x] 2. RabbitMQ: a second event
+- [x] 3. RabbitMQ: a second consumer
 - [ ] 4. Kafka: groups and instances
 - [ ] 5. Kafka: lag
 - [ ] 6. Testing: the failure paths

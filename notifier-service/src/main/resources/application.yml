@@ -35,7 +35,10 @@ rabbit:
   exchange: gridwatch.work-orders
   queue: notifier.work-orders
   binding-key: work-order.*
+  audit-binding-key: work-order.*
   dlq: notifier.work-orders.dlq
+  audit-queue: audit.work-orders
+  audit-dlq: audit.work-orders.dlq
 
 
 notifier:

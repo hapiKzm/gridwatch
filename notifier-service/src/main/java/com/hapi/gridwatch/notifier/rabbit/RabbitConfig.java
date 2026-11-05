@@ -38,6 +38,28 @@ public class RabbitConfig {
     }
 
     @Bean
+    public Queue auditQueue(@Value("${rabbit.audit-queue}") String queueName, @Value("${rabbit.audit-dlq}") String auditDlq ){
+        return QueueBuilder.durable(queueName)
+                .deadLetterExchange("")
+                .deadLetterRoutingKey(auditDlq)
+                .build();
+    }
+
+    @Bean
+    public Queue auditDlq(@Value("${rabbit.audit-dlq}") String queueName){
+        return QueueBuilder.durable(queueName)
+                .build();
+    }
+
+    @Bean
+    public Binding auditBinding(Queue auditQueue, TopicExchange workOrderExchange, @Value("${rabbit.audit-binding-key}") String bindingKey){
+        return BindingBuilder
+                .bind(auditQueue)
+                .to(workOrderExchange)
+                .with(bindingKey);
+    }
+
+    @Bean
     public JacksonJsonMessageConverter messageConverter(){
         return new JacksonJsonMessageConverter();
     }
