@@ -6,10 +6,10 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
-public class Listener {
+public class ReadingListener {
 
     private final ReadingService readingService;
-    public Listener(ReadingService readingService) {
+    public ReadingListener(ReadingService readingService) {
         this.readingService = readingService;
     }
 

@@ -55,6 +55,7 @@ logging:
 kafka-topic:
   reading: 'gridwatch.readings'
   reading-dlt: 'gridwatch.readings-dlt'
+  audit-group: alert.audit
 
 rabbit:
   exchange: 'gridwatch.work-orders'

@@ -86,7 +86,7 @@ Reference: [self-test.md](self-test.md)
 - [x] 1. Flyway: add a column
 - [x] 2. RabbitMQ: a second event
 - [x] 3. RabbitMQ: a second consumer
-- [ ] 4. Kafka: groups and instances
+- [x] 4. Kafka: groups and instances
 - [ ] 5. Kafka: lag
 - [ ] 6. Testing: the failure paths
 - [ ] 7. Grafana: see failures
